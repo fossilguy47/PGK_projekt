@@ -149,11 +149,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChartClass.cpp" />
+    <ClCompile Include="ConfigClass.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GUIMyFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChartClass.h" />
+    <ClInclude Include="ConfigClass.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="GUIMyFrame.h" />
+    <ClInclude Include="vecmat.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

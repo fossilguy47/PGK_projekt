@@ -57,7 +57,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	bSizer712->Add( m_staticText22, 0, wxALL, 5 );
 	
 	x0_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer712->Add( x0_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer712->Add( x0_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText8 = new wxStaticText( this, wxID_ANY, wxT("y0:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText8->Wrap( -1 );
@@ -84,7 +84,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	bSizer7121->Add( m_staticText221, 0, wxALL, 5 );
 	
 	x1_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer7121->Add( x1_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer7121->Add( x1_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText81 = new wxStaticText( this, wxID_ANY, wxT("y1:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText81->Wrap( -1 );
@@ -111,14 +111,14 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	bSizer10->Add( m_staticText2, 0, wxALL, 5 );
 	
 	xMin_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer10->Add( xMin_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer10->Add( xMin_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText21 = new wxStaticText( this, wxID_ANY, wxT("y_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText21->Wrap( -1 );
 	bSizer10->Add( m_staticText21, 0, wxALL, 5 );
 	
 	yMin_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer10->Add( yMin_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer10->Add( yMin_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText39 = new wxStaticText( this, wxID_ANY, wxT("z_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText39->Wrap( -1 );
@@ -139,14 +139,14 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	bSizer101->Add( m_staticText23, 0, wxALL, 5 );
 	
 	xMax_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer101->Add( xMax_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer101->Add( xMax_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText211 = new wxStaticText( this, wxID_ANY, wxT("y_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText211->Wrap( -1 );
 	bSizer101->Add( m_staticText211, 0, wxALL, 5 );
 	
 	yMax_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer101->Add( yMax_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer101->Add( yMax_textCtrl, 0, wxALL, 5 );
 	
 	m_staticText41 = new wxStaticText( this, wxID_ANY, wxT("z_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText41->Wrap( -1 );
@@ -255,6 +255,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	drawing_panel->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MyFrame::drawing_panelUpdate ), NULL, this );
 	function_choice->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( MyFrame::function_choiceOnChoice ), NULL, this );
 	load_button->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::load_buttonOnButtonClick ), NULL, this );
 	draw_button->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
@@ -302,6 +303,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 MyFrame::~MyFrame()
 {
 	// Disconnect Events
+	drawing_panel->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MyFrame::drawing_panelUpdate ), NULL, this );
 	function_choice->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( MyFrame::function_choiceOnChoice ), NULL, this );
 	load_button->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::load_buttonOnButtonClick ), NULL, this );
 	draw_button->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );

@@ -1,10 +1,9 @@
 #include <wx/wx.h>
-#include "GUI.h"
+#include "GUIMyFrame.h"
 
 class MyApp : public wxApp {
 
 public:
-
 	virtual bool OnInit();
 	virtual int OnExit() { return 0; }
 

@@ -11,6 +11,7 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/panel.h>
+
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
@@ -36,7 +37,6 @@ class MyFrame : public wxFrame
 	private:
 	
 	protected:
-		wxPanel* drawing_panel;
 		wxStaticText* m_staticText1;
 		wxChoice* function_choice;
 		wxButton* load_button;
@@ -79,6 +79,7 @@ class MyFrame : public wxFrame
 		wxButton* print_button;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void drawing_panelUpdate( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void function_choiceOnChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void load_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -92,7 +93,7 @@ class MyFrame : public wxFrame
 		
 	
 	public:
-		
+		wxPanel* drawing_panel;
 		MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 650,460 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		
 		~MyFrame();
