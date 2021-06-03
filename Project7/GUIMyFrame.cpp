@@ -2,10 +2,29 @@
 #include "ConfigClass.h"
 #include "ChartClass.h"
 
+float shepard(float d[100][3], int N, float x, float y)
+{
+
+	float a = 0;
+	float b = 0;
+	for (int i = 0; i < N; ++i)
+	{
+		const float w_b = (x - d[i][0]) * (x - d[i][0]) + (y - d[i][1]) * (y - d[i][1]);
+		const float w = 1.f / w_b;
+
+		b += w;
+		a += w * d[i][2];
+	}
+
+	return a / b;
+}
+
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
 {
+	m_staticText1->SetLabel(_(L"Wyb\u00F3r funkcji oraz parametr\u00F3w"));
+	load_button->SetLabel(_(L"Za\u0142aduj"));
 	cfg = std::make_shared<ConfigClass>(this);
 }
 
