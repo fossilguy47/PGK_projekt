@@ -21,22 +21,23 @@ void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 {
-// TODO: Implement load_buttonOnButtonClick
+	// TODO
 }
 
 void GUIMyFrame::draw_buttonOnButtonClick( wxCommandEvent& event )
 {
-	Repaint();
+	// TODO
 }
 
 void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
 {
-// TODO: Implement contour_checkBoxOnCheckBox
+	if (contour_checkBox->IsChecked()) cfg->Set_contour(true);
+	else cfg->Set_contour(false);
 }
 
 void GUIMyFrame::zoom_sliderOnScroll( wxScrollEvent& event )
 {
-	Repaint();
+// TODO
 }
 
 void GUIMyFrame::x_sliderOnScroll( wxScrollEvent& event )
@@ -69,7 +70,6 @@ void GUIMyFrame::Repaint()
 {
 	wxClientDC dc_client(drawing_panel);
 	wxBufferedDC dc_buffered(&dc_client);
-
 	int w, h;
 	drawing_panel->GetSize(&w, &h);
 	ChartClass MyChart(cfg, w, h);

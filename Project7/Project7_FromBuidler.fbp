@@ -179,7 +179,7 @@
                                 <event name="OnRightUp"></event>
                                 <event name="OnSetFocus"></event>
                                 <event name="OnSize"></event>
-                                <event name="OnUpdateUI"></event>
+                                <event name="OnUpdateUI">drawing_panelUpdate</event>
                             </object>
                         </object>
                     </object>

@@ -39,8 +39,8 @@ class GUIMyFrame : public MyFrame
 		/** Constructor */
 		GUIMyFrame( wxWindow* parent );
 	//// end generated class members
-		std::shared_ptr<ConfigClass> cfg;
 		~GUIMyFrame() {};
+		std::shared_ptr<ConfigClass> cfg;
 		void Repaint();
 
 };

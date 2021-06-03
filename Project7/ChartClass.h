@@ -12,12 +12,10 @@ private:
     std::shared_ptr<ConfigClass> cfg;
     int _w, _h;
     void drawLine2d(wxDC* dc, Matrix t, double x1, double y1, double x2, double y2);
-    void drawAxis(wxDC* dc, Matrix t);
+    void drawAxes(wxDC* dc, Matrix t);
 public:
     ChartClass(std::shared_ptr<ConfigClass> c, int w = 600, int h = 400);
-
-    void Draw(wxDC* dc);  // rysuje wykres
-
+    void Draw(wxDC* dc);
 };
 
 #endif

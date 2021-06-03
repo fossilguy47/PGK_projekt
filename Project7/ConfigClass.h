@@ -6,9 +6,12 @@
 class ConfigClass
 {
 private:
-    GUIMyFrame* MainWindow;   // wskaznik do glownego okna aplikacji
+    GUIMyFrame* MainWindow;
+    bool is_contour = false;
 public:
     ConfigClass(GUIMyFrame* wnd);
+    bool Get_contour() { return is_contour; };
+    void Set_contour(bool value) { is_contour = value; };
 };
 
 #endif
