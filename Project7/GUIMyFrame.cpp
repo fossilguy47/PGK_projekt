@@ -2,23 +2,6 @@
 #include "ConfigClass.h"
 #include "ChartClass.h"
 
-float shepard(float d[100][3], int N, float x, float y)
-{
-
-	float a = 0;
-	float b = 0;
-	for (int i = 0; i < N; ++i)
-	{
-		const float w_b = (x - d[i][0]) * (x - d[i][0]) + (y - d[i][1]) * (y - d[i][1]);
-		const float w = 1.f / w_b;
-
-		b += w;
-		a += w * d[i][2];
-	}
-
-	return a / b;
-}
-
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
@@ -30,12 +13,12 @@ MyFrame( parent )
 
 void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
 {
-	Repaint();
+	if (!cfg->Get_contour()) Repaint();
 }
 
 void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 {
-// TODO: Implement function_choiceOnChoice
+	cfg->set_f_type(function_choice->GetSelection());
 }
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
@@ -43,15 +26,108 @@ void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 	// TODO
 }
 
+void GUIMyFrame::x0_update(wxCommandEvent& event)
+{
+	if (x0_SpinCtrlDouble->GetValue() < x1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_x0(x0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		x0_SpinCtrlDouble->SetValue(cfg->Get_x0());
+		wxBell();
+	}
+}
+
+void GUIMyFrame::y0_update( wxCommandEvent& event )
+{
+	if (y0_SpinCtrlDouble->GetValue() < y1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_y0(y0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		y0_SpinCtrlDouble->SetValue(cfg->Get_y0());
+		wxBell();
+	}
+}
+
+void GUIMyFrame::z0_update( wxCommandEvent& event )
+{
+	if (z0_SpinCtrlDouble->GetValue() < z1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_z0(z0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		z0_SpinCtrlDouble->SetValue(cfg->Get_z0());
+		wxBell();
+	}
+}
+
+void GUIMyFrame::x1_update( wxCommandEvent& event )
+{
+	if (x1_SpinCtrlDouble->GetValue() > x0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_x1(x1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		x1_SpinCtrlDouble->SetValue(cfg->Get_x1());
+		wxBell();
+	}
+}
+
+void GUIMyFrame::y1_update( wxCommandEvent& event )
+{
+	if (y1_SpinCtrlDouble->GetValue() > y0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_y1(y1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		y1_SpinCtrlDouble->SetValue(cfg->Get_y1());
+		wxBell();
+	}
+}
+
+void GUIMyFrame::z1_update( wxCommandEvent& event )
+{
+	if (z1_SpinCtrlDouble->GetValue() > z0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_z1(z1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		z1_SpinCtrlDouble->SetValue(cfg->Get_z1());
+		wxBell();
+	}
+}
+
 void GUIMyFrame::draw_buttonOnButtonClick( wxCommandEvent& event )
 {
-	// TODO
+	Repaint();
 }
 
 void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
 {
-	if (contour_checkBox->IsChecked()) cfg->Set_contour(true);
-	else cfg->Set_contour(false);
+	if (contour_checkBox->IsChecked())
+	{
+		cfg->Set_contour(true);
+		zoom_slider->Disable();
+		x_slider->Disable();
+		y_slider->Disable();
+		z_slider->Disable();
+	}
+	else
+	{
+		cfg->Set_contour(false);
+		zoom_slider->Enable();
+		x_slider->Enable();
+		y_slider->Enable();
+		z_slider->Enable();
+	}
+	Repaint();
 }
 
 void GUIMyFrame::zoom_sliderOnScroll( wxScrollEvent& event )
@@ -87,10 +163,10 @@ void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
 
 void GUIMyFrame::Repaint()
 {
-	wxClientDC dc_client(drawing_panel);
-	wxBufferedDC dc_buffered(&dc_client);
 	int w, h;
 	drawing_panel->GetSize(&w, &h);
+	wxClientDC dc_client(drawing_panel);
+	wxBufferedDC dc_buffered(&dc_client);
 	ChartClass MyChart(cfg, w, h);
 	MyChart.Draw(&dc_buffered);
 }

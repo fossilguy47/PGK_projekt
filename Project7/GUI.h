@@ -1,17 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jun 17 2015)
+// C++ code generated with wxFormBuilder (version Oct 26 2018)
 // http://www.wxformbuilder.org/
 //
-// PLEASE DO "NOT" EDIT THIS FILE!
+// PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __GUI_H__
-#define __GUI_H__
+#pragma once
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/panel.h>
-
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
@@ -20,7 +18,11 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/choice.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/button.h>
+#include <wx/spinctrl.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
 #include <wx/slider.h>
@@ -28,31 +30,30 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MyFrame
 ///////////////////////////////////////////////////////////////////////////////
-class MyFrame : public wxFrame 
+class MyFrame : public wxFrame
 {
 	private:
-	
+
 	protected:
 		wxPanel* drawing_panel;
 		wxStaticText* m_staticText1;
 		wxChoice* function_choice;
 		wxButton* load_button;
 		wxStaticText* m_staticText22;
-		wxTextCtrl* x0_textCtrl;
+		wxSpinCtrlDouble* x0_SpinCtrlDouble;
 		wxStaticText* m_staticText8;
-		wxTextCtrl* y0_textCtrl;
+		wxSpinCtrlDouble* y0_SpinCtrlDouble;
 		wxStaticText* m_staticText9;
-		wxTextCtrl* z0_textCtrl;
+		wxSpinCtrlDouble* z0_SpinCtrlDouble;
 		wxStaticText* m_staticText221;
-		wxTextCtrl* x1_textCtrl;
+		wxSpinCtrlDouble* x1_SpinCtrlDouble;
 		wxStaticText* m_staticText81;
-		wxTextCtrl* y1_textCtrl;
+		wxSpinCtrlDouble* y1_SpinCtrlDouble;
 		wxStaticText* m_staticText91;
-		wxTextCtrl* z1_textCtrl;
+		wxSpinCtrlDouble* z1_SpinCtrlDouble;
 		wxStaticText* m_staticText2;
 		wxTextCtrl* xMin_textCtrl;
 		wxStaticText* m_staticText21;
@@ -78,11 +79,17 @@ class MyFrame : public wxFrame
 		wxSlider* z_slider;
 		wxButton* save_button;
 		wxButton* print_button;
-		
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void drawing_panelUpdate( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void function_choiceOnChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void load_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void x0_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void y0_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void z0_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void x1_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void y1_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void z1_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void contour_checkBoxOnCheckBox( wxCommandEvent& event ) { event.Skip(); }
 		virtual void zoom_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
@@ -91,11 +98,13 @@ class MyFrame : public wxFrame
 		virtual void z_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
 		virtual void save_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void print_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 650,460 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Wykresy 3D"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1000,600 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
 		~MyFrame();
+
 };
 
-#endif //__GUI_H__
