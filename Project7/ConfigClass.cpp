@@ -22,4 +22,8 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
     x1 = 50.0;
     y1 = 50.0;
     z1 = 50.0;
+    zoom = 50.0;
+    x_rot = 0.0;
+    y_rot = 0.0;
+    z_rot = 0.0;
 }

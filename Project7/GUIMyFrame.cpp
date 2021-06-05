@@ -18,7 +18,7 @@ void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
 
 void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 {
-	cfg->set_f_type(function_choice->GetSelection());
+	cfg->Set_f_type(function_choice->GetSelection());
 }
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
@@ -132,22 +132,22 @@ void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
 
 void GUIMyFrame::zoom_sliderOnScroll( wxScrollEvent& event )
 {
-// TODO
+	cfg->Set_zoom(zoom_slider->GetValue());
 }
 
 void GUIMyFrame::x_sliderOnScroll( wxScrollEvent& event )
 {
-// TODO: Implement x_sliderOnScroll
+	cfg->Set_x_rot(x_slider->GetValue());
 }
 
 void GUIMyFrame::y_sliderOnScroll( wxScrollEvent& event )
 {
-// TODO: Implement y_sliderOnScroll
+	cfg->Set_y_rot(y_slider->GetValue());
 }
 
 void GUIMyFrame::z_sliderOnScroll( wxScrollEvent& event )
 {
-// TODO: Implement z_sliderOnScroll
+	cfg->Set_z_rot(z_slider->GetValue());
 }
 
 void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event )

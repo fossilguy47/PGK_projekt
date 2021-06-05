@@ -2,6 +2,7 @@
 #include <memory>
 #include "ChartClass.h"
 #include "vecmat.h"
+#define PI 3.14159
 
 struct Point
 {
@@ -17,21 +18,97 @@ struct Point
     void operator()(double x, double y, double z) { mX = x; mY = y; mZ = z; }
 };
 
-struct Segment
-{
-    Point mA, mB, mC;
-    Segment() : mA(), mB(), mC() {}
-    Segment(Point A, Point B, Point C) : mA(A), mB(B), mC(C) {}
-    double sumZ() const
-    {
-        return mA.mZ + mB.mZ + mC.mZ;
-    }
+struct Segment {
+	Point begin, end;
+	Segment(Point begin_point, Point end_point) : begin(begin_point), end(end_point){}
 };
+
+//struct Segment
+//{
+//    Point mA, mB, mC;
+//    Segment() : mA(), mB(), mC() {}
+//    Segment(Point A, Point B, Point C=Point(0,0,0)) : mA(A), mB(B), mC(C) {}
+//    double sumZ() const
+//    {
+//        return mA.mZ + mB.mZ + mC.mZ;
+//    }
+//};
 
 
 ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h) : _w(w), _h(h) 
 {
 	cfg = std::move(c);
+}
+
+
+Matrix createRotationMatrix(double Rx, double Ry, double Rz) {
+	//Macierze rotacji wokół osi X, Y, Z
+	Matrix R_X, R_Y, R_Z;
+	//Wypelniamy macierze zgodnie ze schematem zaprezentowanym na wykładzie
+	R_X.data[0][0] = 1;
+	R_X.data[1][1] = cos(Rx * PI / 180);
+	R_X.data[1][2] = -sin(Rx * PI / 180);
+	R_X.data[2][1] = sin(Rx * PI / 180);
+	R_X.data[2][2] = cos(Rx * PI / 180);
+
+	R_Y.data[0][0] = cos(Ry * PI / 180);
+	R_Y.data[0][2] = sin(Ry * PI / 180);
+	R_Y.data[1][1] = 1;
+	R_Y.data[2][0] = -sin(Ry * PI / 180);
+	R_Y.data[2][2] = cos(Ry * PI / 180);
+
+	R_Z.data[0][0] = cos(Rz * PI / 180);
+	R_Z.data[0][1] = -sin(Rz * PI / 180);
+	R_Z.data[1][0] = sin(Rz * PI / 180);
+	R_Z.data[1][1] = cos(Rz * PI / 180);
+	R_Z.data[2][2] = 1;
+
+	//Zwracamy iloczyn odpowiadający kolejnym transformacjom w 3 wymiarach
+	return R_X * R_Y * R_Z;
+}
+
+Matrix ChartClass::createTransformationMatrix() {
+	//wartosci zmian x y z odpowiednio do translacji, rotacji, skalowania
+	double Tx, Ty, Tz, Rx, Ry, Rz, Sx, Sy, Sz;
+	//ustawienie odpowiednich wartosci parametrow
+
+	////TU WSTAWIĆ PRAWIDŁOWE PARAMETRY
+	Tx = 0.0;
+	Ty = 0.0;
+	Tz = 2.0;
+	Rx = 45 + cfg->Get_x_rot() * 360.0 / 100.0;
+	Ry = 0 + cfg->Get_y_rot() * 360.0 / 100.0;
+	Rz = 135 + cfg->Get_z_rot() * 360.0 / 100.0;
+	Sx = (cfg->Get_zoom()/50.0) / 100.0;
+	Sy = (cfg->Get_zoom() / 50.0) / 100.0;
+	Sz = (cfg->Get_zoom() / 50.0) / 100.0;
+
+	//macierze przeksztalcen odpowiednio translacji, rotacji, skalowania
+	Matrix T, R, S;
+	//macierz translacji, T[3][3] juz wypelnione
+	T.data[0][0] = 1;
+	T.data[1][1] = 1;
+	T.data[2][2] = 1;
+	T.data[0][3] = Tx;
+	T.data[1][3] = -Ty;
+	T.data[2][3] = Tz;
+	//uzupelnienie macierzy rotacji przy wykorzystaniu osobnej funkcji
+	R = createRotationMatrix(Rx, Ry, Rz);
+	//macierz skalowania
+	S.data[0][0] = Sx;
+	S.data[1][1] = -Sy;
+	S.data[2][2] = Sz;
+
+	return T * R * S;
+}
+
+std::vector<Segment> ChartClass::getAxes(wxDC* dc) {
+	std::vector<Segment> axes;
+	axes.clear();
+	axes.push_back(Segment(Point(0, 0, 0), Point(150, 0, 0)));
+	axes.push_back(Segment(Point(0, 0, 0), Point(0, 150, 0)));
+	axes.push_back(Segment(Point(0, 0, 0), Point(0, 0, 200)));
+	return axes;
 }
 
 void ChartClass::Draw(wxDC* dc) 
@@ -43,7 +120,10 @@ void ChartClass::Draw(wxDC* dc)
 	{
 		drawContourMap(dc);
 	}
-	else dc->DrawText("KONTUROWA", wxPoint(100, 100));
+	else 
+	{
+		drawAxes(dc);
+	}
 }
 
 double ChartClass::getFunctionValue(double x, double y)
@@ -73,8 +153,59 @@ void ChartClass::drawLine2d(wxDC* dc, Matrix t, double x1, double y1, double x2,
 
 }
 
-void ChartClass::drawAxes(wxDC* dc, Matrix t) {
+void ChartClass::drawAxes(wxDC* dc) {
+	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
+	dc->SetTextForeground(wxColour(0,0,0));
+	dc->Clear();
+	dc->SetPen(wxPen(RGB(0, 0, 0)));
 
+	//Macierz transformacji
+	Matrix T = createTransformationMatrix();
+	//Dodatkowa macierz translacji, umieszczajaca obiekt w centrum panelu - połowa wysokości i szerokości
+	Matrix C;
+	C.data[0][0] = 1;
+	C.data[1][1] = 1;
+	C.data[2][2] = 1;
+	C.data[0][3] = 0.5;
+	C.data[1][3] = 0.5;
+
+	////PÓKI CO W DATA SĄ TYLKO OSIE (w podobny sposób bedzie chyba wykres najłatwiej zrobić)
+	std::vector<Segment> data = getAxes(dc);
+	//For przechodzacy przez wszystkie rysowane odcinki
+	for (auto& line : data) {
+		//Poczatkowy i koncowy punkt odcinka
+		Vector p0, p1;
+		//Ustawienie punktu p0owego i koncowego odcinka
+		p0.Set(line.begin.mX, line.begin.mY, line.begin.mZ);
+		p1.Set(line.end.mX, line.end.mY, line.end.mZ);
+		//Przemonozenie obu punktów przez macierze transformacji
+		p0 = T * p0;
+		p1 = T * p1;
+		//Rzutowanie punktów na płaszczyznę ekranu, "spłaszczenie" osi Z
+		p0.Set(p0.GetX() / p0.GetZ(), p0.GetY() / p0.GetZ(), p0.GetZ());
+		p1.Set(p1.GetX() / p1.GetZ(), p1.GetY() / p1.GetZ(), p1.GetZ());
+		//Dodatkowa translacja określająca środek ekranu
+		p0 = C * p0;
+		p1 = C * p1;
+		dc->DrawLine(p0.GetX() * _w, p0.GetY() * _h, p1.GetX() * _w, p1.GetY() * _h);
+	}
+	dc->SetPen(wxPen(RGB(0, 0, 0)));
+	Vector x_text, y_text, z_text;
+	x_text.Set(150, -10, 0);
+	y_text.Set(-10, 150, 0);
+	z_text.Set(10, 0, 200);
+	x_text = T * x_text;
+	y_text = T * y_text;
+	z_text = T * z_text;
+	x_text.Set(x_text.GetX() / x_text.GetZ(), x_text.GetY() / x_text.GetZ(), x_text.GetZ());
+	y_text.Set(y_text.GetX() / y_text.GetZ(), y_text.GetY() / y_text.GetZ(), y_text.GetZ());
+	z_text.Set(z_text.GetX() / z_text.GetZ(), z_text.GetY() / z_text.GetZ(), z_text.GetZ());
+	x_text = C * x_text;
+	y_text = C * y_text;
+	z_text = C * z_text;
+	dc->DrawText("X", wxPoint(x_text.GetX() * _w, x_text.GetY() * _h));
+	dc->DrawText("Y", wxPoint(y_text.GetX() * _w, y_text.GetY() * _h));
+	dc->DrawText("Z", wxPoint(z_text.GetX() * _w, z_text.GetY() * _h));
 }
 
 void ChartClass::drawContourMap(wxDC *dc)

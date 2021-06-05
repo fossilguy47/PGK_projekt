@@ -13,6 +13,8 @@ private:
     double y_start, y_stop;
     double alpha, beta, gamma;
     int f_type;
+    int zoom;
+    int x_rot, y_rot, z_rot;
 
 public:
     ConfigClass(GUIMyFrame* wnd);
@@ -42,8 +44,15 @@ public:
     double Get_z1() { return z1; };
     void   Set_z1(float v) { z1 = v; };
     int    Get_f_type() { return f_type; };
-    void   set_f_type(int i) { f_type = i; };
-
+    void   Set_f_type(int i) { f_type = i; };
+    int Get_zoom() { return zoom; };
+    void Set_zoom(int v) { zoom = v; };
+    int Get_x_rot() { return x_rot; };
+    void Set_x_rot(int v) { x_rot = v; };
+    int Get_y_rot() { return y_rot; };
+    void Set_y_rot(int v) { y_rot = v; };
+    int Get_z_rot() { return z_rot; };
+    void Set_z_rot(int v) { z_rot = v; };
 };
 
 #endif
