@@ -150,14 +150,69 @@ void GUIMyFrame::z_sliderOnScroll( wxScrollEvent& event )
 	cfg->Set_z_rot(z_slider->GetValue());
 }
 
-void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event )
+void GUIMyFrame::save_buttonOnButtonClick(wxCommandEvent& event)
 {
-// TODO: Implement save_buttonOnButtonClick
+	::wxInitAllImageHandlers();
+	wxClientDC* my_wxclientdc = new wxClientDC(drawing_panel);
+	wxMemoryDC* my_wxmemorydc = new wxMemoryDC();
+	wxBitmap my_bitmap_tmp(drawing_panel->GetSize(), wxBITMAP_SCREEN_DEPTH);
+	my_wxmemorydc->SelectObject(my_bitmap_tmp);
+	my_wxmemorydc->Blit(wxPoint(0, 0), drawing_panel->GetSize(), my_wxclientdc, wxPoint(-1, -1), wxCOPY, true, wxDefaultPosition);
+	wxFileDialog* FileDialog2;
+	FileDialog2 = new wxFileDialog(this, _("Select file"), wxEmptyString, wxEmptyString, _(".bmp|*.bmp|.jpeg|*.jpeg|.png|*.png"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition, wxDefaultSize, _T("wxFileDialog"));
+	int dlg = FileDialog2->ShowModal();
+	if (dlg == wxID_OK)
+	{
+		wxFileName my_file(FileDialog2->GetPath());
+		wxString my_file_ext = my_file.GetExt().Lower();
+
+		if (my_file_ext == wxT("png"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_PNG, NULL);
+		else if (my_file_ext == wxT("jpeg"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_JPEG, NULL);
+		else if (my_file_ext == wxT("bmp"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_BMP, NULL);
+
+	}
 }
 
-void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
+
+bool Printout::OnBeginDocument(int startPage, int endPage)
 {
-// TODO: Implement print_buttonOnButtonClick
+	if (wxPrintout::OnBeginDocument(startPage, endPage)) return true;
+	return false;
+}
+
+bool Printout::OnPrintPage(int pageNum)
+{
+	std::shared_ptr<wxPageSetupDialogData> PageSetupData = std::shared_ptr<wxPageSetupDialogData>(new wxPageSetupDialogData);
+	wxPageSetupDialog PageSetupDlg(this, PageSetupData.get());
+	PageSetupDlg.ShowModal();
+	*PageSetupData = PageSetupDlg.GetPageSetupData();
+	//jest ladniej po odkomentowaniu ale zmiany tam poczynione nic nie daja
+	//PageSetupDlg.ShowModal();
+	wxDC* dc = GetDC();
+	int w, h;
+	drawing_panel->GetSize(&w, &h);
+	FitThisSizeToPageMargins(wxSize(w, h), *PageSetupData);
+	wxClientDC dc_client(drawing_panel);
+	wxBufferedDC dc_buffered(&dc_client);
+	ChartClass MyChart(cfg, w, h);
+	MyChart.Draw(dc);
+	return true;
+}
+
+void Printout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom, int* selPageTo)
+{
+	*minPage = 1;
+	*maxPage = 1;
+	*selPageFrom = 1;
+	*selPageTo = 1;
+}
+
+//najprostsza wersja drukowania
+void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
+{	
+    wxPrinter Printer;
+	Printout MyPrintout;
+	Printer.Print(this, &MyPrintout, true);
 }
 
 
@@ -170,4 +225,3 @@ void GUIMyFrame::Repaint()
 	ChartClass MyChart(cfg, w, h);
 	MyChart.Draw(&dc_buffered);
 }
-

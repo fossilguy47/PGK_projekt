@@ -58,5 +58,17 @@ class GUIMyFrame : public MyFrame
 
 
 };
-
+/*
+klasa pomocnicza wraz z metodami. Potrzebna do wydrukowania 
+Wrzucilem tutaj bo nie wiem gdzie indziej
+*/
+class Printout : public wxPrintout, public GUIMyFrame
+{
+public:
+	Printout(const wxChar* title = (const wxChar*)"Mój wydruk") :wxPrintout(title), GUIMyFrame(NULL) {};
+	bool OnPrintPage(int page);
+	bool OnBeginDocument(int startPage, int endPage);
+	void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom, int* selPageTo);
+};
 #endif // __GUIMyFrame__
+

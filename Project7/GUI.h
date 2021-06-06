@@ -27,6 +27,10 @@
 #include <wx/checkbox.h>
 #include <wx/slider.h>
 #include <wx/frame.h>
+#include <wx/wxprec.h>
+#include <wx/print.h>
+#include <wx/printdlg.h>
+
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -107,4 +111,3 @@ class MyFrame : public wxFrame
 		~MyFrame();
 
 };
-
