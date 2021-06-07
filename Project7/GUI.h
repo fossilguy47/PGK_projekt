@@ -23,14 +23,9 @@
 #include <wx/icon.h>
 #include <wx/button.h>
 #include <wx/spinctrl.h>
-#include <wx/textctrl.h>
 #include <wx/checkbox.h>
 #include <wx/slider.h>
 #include <wx/frame.h>
-#include <wx/wxprec.h>
-#include <wx/print.h>
-#include <wx/printdlg.h>
-
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -58,18 +53,10 @@ class MyFrame : public wxFrame
 		wxSpinCtrlDouble* y1_SpinCtrlDouble;
 		wxStaticText* m_staticText91;
 		wxSpinCtrlDouble* z1_SpinCtrlDouble;
-		wxStaticText* m_staticText2;
-		wxTextCtrl* xMin_textCtrl;
-		wxStaticText* m_staticText21;
-		wxTextCtrl* yMin_textCtrl;
 		wxStaticText* m_staticText39;
-		wxStaticText* m_staticText40;
-		wxStaticText* m_staticText23;
-		wxTextCtrl* xMax_textCtrl;
-		wxStaticText* m_staticText211;
-		wxTextCtrl* yMax_textCtrl;
+		wxStaticText* f_min_txt;
 		wxStaticText* m_staticText41;
-		wxStaticText* m_staticText42;
+		wxStaticText* f_max_txt;
 		wxButton* draw_button;
 		wxCheckBox* contour_checkBox;
 		wxStaticText* m_staticText2313;
@@ -111,3 +98,4 @@ class MyFrame : public wxFrame
 		~MyFrame();
 
 };
+

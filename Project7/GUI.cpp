@@ -113,58 +113,32 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxBoxSizer* bSizer10;
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_staticText2 = new wxStaticText( this, wxID_ANY, wxT("x_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText2->Wrap( -1 );
-	bSizer10->Add( m_staticText2, 0, wxALL, 5 );
-
-	xMin_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer10->Add( xMin_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
-
-	m_staticText21 = new wxStaticText( this, wxID_ANY, wxT("y_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText21->Wrap( -1 );
-	bSizer10->Add( m_staticText21, 0, wxALL, 5 );
-
-	yMin_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer10->Add( yMin_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
-
-	m_staticText39 = new wxStaticText( this, wxID_ANY, wxT("z_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	bSizer10->SetMinSize( wxSize( 100,30 ) );
+	m_staticText39 = new wxStaticText( this, wxID_ANY, wxT("f_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText39->Wrap( -1 );
-	bSizer10->Add( m_staticText39, 0, wxALL, 5 );
+	bSizer10->Add( m_staticText39, 3, wxALL, 5 );
 
-	m_staticText40 = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText40->Wrap( -1 );
-	bSizer10->Add( m_staticText40, 0, wxALL, 5 );
+	f_min_txt = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	f_min_txt->Wrap( -1 );
+	bSizer10->Add( f_min_txt, 0, wxALL, 5 );
 
 
-	bSizer7->Add( bSizer10, 1, wxEXPAND, 5 );
+	bSizer7->Add( bSizer10, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_LEFT|wxALL, 5 );
 
 	wxBoxSizer* bSizer101;
 	bSizer101 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_staticText23 = new wxStaticText( this, wxID_ANY, wxT("x_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText23->Wrap( -1 );
-	bSizer101->Add( m_staticText23, 0, wxALL, 5 );
-
-	xMax_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer101->Add( xMax_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
-
-	m_staticText211 = new wxStaticText( this, wxID_ANY, wxT("y_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText211->Wrap( -1 );
-	bSizer101->Add( m_staticText211, 0, wxALL, 5 );
-
-	yMax_textCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 30,20 ), 0 );
-	bSizer101->Add( yMax_textCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
-
-	m_staticText41 = new wxStaticText( this, wxID_ANY, wxT("z_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	bSizer101->SetMinSize( wxSize( 100,30 ) );
+	m_staticText41 = new wxStaticText( this, wxID_ANY, wxT("f_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
 	m_staticText41->Wrap( -1 );
-	bSizer101->Add( m_staticText41, 0, wxALL, 5 );
+	bSizer101->Add( m_staticText41, 3, wxALL, 5 );
 
-	m_staticText42 = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText42->Wrap( -1 );
-	bSizer101->Add( m_staticText42, 0, wxALL, 5 );
+	f_max_txt = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	f_max_txt->Wrap( -1 );
+	bSizer101->Add( f_max_txt, 0, wxALL, 5 );
 
 
-	bSizer7->Add( bSizer101, 1, wxEXPAND, 5 );
+	bSizer7->Add( bSizer101, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_LEFT|wxALL, 5 );
 
 	draw_button = new wxButton( this, wxID_ANY, wxT("Rysuj"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer7->Add( draw_button, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );

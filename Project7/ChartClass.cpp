@@ -1,6 +1,7 @@
 ﻿#include <wx/dc.h>
 #include "ChartClass.h"
 #include "vecmat.h"
+#include <cmath>
 
 #define PI 3.14159
 
@@ -38,6 +39,7 @@ struct Segment {
 ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h) : _w(w), _h(h) 
 {
 	cfg = std::move(c);
+	initializeValueGrid();
 }
 
 
@@ -120,19 +122,20 @@ void ChartClass::Draw(wxDC* dc)
 
 double ChartClass::getFunctionValue(double x, double y)
 {
+	auto sign = [](double a) {return a > 0 ? 1 : (a == 0 ? 0 : -1); };
 	switch (cfg->Get_f_type())
 	{
 	case 1:
-		return pow(x, 3) - pow(y, 3);
+		return (x * x + y * y) / 50;
 		break;
 	case 2:
-		return x * x + y * y;
+		return (sign(-65 - x) + sign(-35 - x) + sign(-5 - x) + sign(25 - x) + sign(55 - x)) * 10;
 		break;
 	case 3:
 		return x + 2 * y;
 		break;
 	case 4:
-		return pow(y, 3) + 2 * x * x - 3 * y * y - 4 * x + 3 * y;
+		return (x*y) / exp(pow(0.05 * x, 2) * pow(0.05 * y, 2))/3;
 		break;
 	default:
 		return 50*sin((x * x + y * y)/500);
@@ -195,150 +198,151 @@ void ChartClass::drawAxes(wxDC* dc) {
 	dc->DrawText("Z", wxPoint(z_text.GetX() * _w, z_text.GetY() * _h));
 }
 
-void ChartClass::drawContourMap(wxDC *dc)
+/*void ChartClass::Scale_valueGrid()
 {
-	/*wxMemoryDC memDC;
-	memDC.SelectObject(memoryBitmap);
-	memDC.Clear();
-	memDC.SetPen(*wxBLACK_PEN);
-	memDC.SetBrush(*wxWHITE_BRUSH);*/
-	int w, h;
-
-	// skalowanie mapy konturowej
-	// kiedy długość > szerokość
-	if (cfg->Get_x1() - cfg->Get_x0() > cfg->Get_y1() - cfg->Get_y0())
-	{
-		w = 500;
-		h = static_cast<int>((cfg->Get_y1() - cfg->Get_y0()) / (cfg->Get_x1() - cfg->Get_x0()) * w);
-	}
-	// kiedy szerokość > długość
-	else if (cfg->Get_x1() - cfg->Get_x0() < cfg->Get_y1() - cfg->Get_y0())
-	{
-		h = 500;
-		w = static_cast<int>((cfg->Get_x1() - cfg->Get_x0()) / (cfg->Get_y1() - cfg->Get_y0()) * h);
-	}
-	// kiedy długość == szerokość
-	else
-	{
-		w = 500;
-		h = 500;
-	}
-	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
-	dc->Clear();
-	dc->SetPen(wxPen(*wxBLACK_PEN));
-	dc->DrawRectangle(10, 10, w - 20, h - 20);
-	dc->SetClippingRegion(wxRect(10, 10, w - 20, h - 20));
-	auto** valueGrid = new float* [h];
-	for (int i = 0; i < h; ++i)
-	{
-		valueGrid[i] = new float[w];
-	}
-
 	double x0 = cfg->Get_x0();
 	double x1 = cfg->Get_x1();
 	double y0 = cfg->Get_y0();
 	double y1 = cfg->Get_y1();
-	double x_step = (x1 - x0) / (w-1.0);
-	double y_step = (y1 - y0) / (h-1.0);
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
-			valueGrid[i][j] = getFunctionValue(x0+i*x_step, y0+j*y_step);
-
-	double f_min = valueGrid[0][0], f_max = valueGrid[0][0];
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
-		{
-			f_min = valueGrid[i][j] < f_min ? valueGrid[i][j] : f_min;
-			f_max = valueGrid[i][j] > f_max ? valueGrid[i][j] : f_max;
-		}
-
-	// część odpowiedzialna za kolorowanie mapy
-	for (int i = 0; i < h; i++)
+	// skalowanie mapy konturowej
+	// kiedy długość > szerokość
+	if (x1 - x0 > y1 - y0)
 	{
-		for (int j = 0; j < w; j++)
-		{
-			const float color = (valueGrid[i][j] - f_min) / (f_max - f_min);
-			//const int it = i * 500 * 3 + j * 3;
-			dc->SetPen(wxColor(static_cast<int> (color * 255),
-								0,static_cast<int> ((1.0 - color) * 255)));
-			dc->DrawPoint(j,i);
-		}
+		plot_w = 500;
+		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
 	}
-
-	// kontury (póki co ustawione na 5 poziomic)
-	dc->SetPen(wxPen(*wxBLACK_PEN));
-	int NoLevels = 5;
-	for (int i = 0; i < NoLevels; i++)
+	// kiedy szerokość > długość
+	else if (x1 - x0 < y1 - y0)
 	{
-		float threshold = f_min + (i + 1.0) * (f_max - f_min) / (NoLevels + 1.0);
-
-		for (int x = 0; x < w; x++)
-			for (int y = 0; y < h; y++)
-				if (valueGrid[y][x] > threshold)
-				{
-					for (int a = -1; a <= 1; a++)
-						for (int b = -1; b <= 1; b++)
-							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < h) && (b + x < w) &&
-								(valueGrid[a + y][b + x] < threshold))
-								dc->DrawPoint(x,y);
-				}
+		plot_h = 500;
+		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
 	}
+	// kiedy długość == szerokość
+	else
+	{
+		plot_w = 500;
+		plot_h = 500;
+	}
+}*/
 
-	for (int i = 0; i < h; ++i)
-		delete[] valueGrid[i];
-	delete[] valueGrid;
-	/*std::vector<float> valueGrid;
+void ChartClass::initializeValueGrid()
+{
 	valueGrid.clear();
-
-	double x_start = cfg->Get_x_start();
-	double x_stop = cfg->Get_x_stop();
-	double y_start = cfg->Get_y_start();
-	double y_stop = cfg->Get_y_stop();
-	double x_step = (x_stop - x_start) / (w - 1.0);
-	double y_step = (y_stop - y_start) / (h - 1.0);
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
-			valueGrid.push_back(getFunctionValue(x_start + i * x_step, y_start + j * y_step));
-
-	double f_min = valueGrid[0], f_max = valueGrid[0];
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
+	//Scale_valueGrid();
+	double x0 = cfg->Get_x0();
+	double x1 = cfg->Get_x1();
+	double y0 = cfg->Get_y0();
+	double y1 = cfg->Get_y1();
+	if (x1 - x0 > y1 - y0)
+	{
+		plot_w = 500;
+		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
+	}
+	// kiedy szerokość > długość
+	else if (x1 - x0 < y1 - y0)
+	{
+		plot_h = 500;
+		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
+	}
+	// kiedy długość == szerokość
+	else
+	{
+		plot_w = 500;
+		plot_h = 500;
+	}
+	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
+	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+	z_min = z_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y0());
+	for (int i = 0; i < plot_h; i++) 
+	{
+		for (int j = 0; j < plot_w; j++)
 		{
-			f_min = valueGrid[w*i+j] < f_min ? valueGrid[w*i+j] : f_min;
-			f_max = valueGrid[w*i+j] > f_max ? valueGrid[w*i+j] : f_max;
+			float value = getFunctionValue(cfg->Get_x0() + i * x_step, cfg->Get_y0() + j * y_step);
+			/* progowanie wartości (na razie okomentowane, by wychodziły wartości
+				f_min i fmax nieograniczone przez z0 i z1)*/
+			/*if (value > cfg->Get_z1())
+			{
+				valueGrid.push_back(cfg->Get_z1());
+			}
+			else if (value < cfg->Get_z0())
+			{
+				valueGrid.push_back(cfg->Get_z0());
+			}
+			else
+			{
+				valueGrid.push_back(value);
+			}*/
+			valueGrid.push_back(value);
+			z_max = z_max < value ? value : z_max;
+			z_min = z_min > value ? value : z_min;
+		}
+	}
+}
+
+
+void ChartClass::drawContourMap(wxDC *dc)
+{
+
+	initializeValueGrid();
+	wxBitmap bitmap;
+	wxImage image;
+	bitmap.Create(plot_w, plot_h, 24);
+	image.Create(plot_w, plot_h);
+
+	dc->Clear();
+	wxMemoryDC memDC;
+	memDC.SelectObject(bitmap);
+	memDC.Clear();
+	memDC.SetPen(*wxBLACK_PEN);
+	memDC.SetBrush(*wxWHITE_BRUSH);
+	memDC.SetBackground(*wxWHITE_BRUSH);
+	memDC.DrawRectangle(20, 20, plot_w, plot_h);
+	memDC.SetClippingRegion(wxRect(20, 20, plot_w, plot_h));
+	
+	double f_min = valueGrid[0], f_max = valueGrid[0];
+	for (int i = 0; i < plot_h; i++)
+		for (int j = 0; j < plot_w; j++)
+		{
+			f_min = valueGrid[plot_w*i + j] < f_min ? valueGrid[plot_w*i + j] : f_min;
+			f_max = valueGrid[plot_w*i + j] > f_max ? valueGrid[plot_w*i + j] : f_max;
 		}
 
 	// część odpowiedzialna za kolorowanie mapy
-	for (int i = 0; i < h; i++)
+	unsigned char* pixels = image.GetData();
+	for (int i = 0; i < plot_h; i++)
 	{
-		for (int j = 0; j < w; j++)
+		for (int j = 0; j < plot_w; j++)
 		{
-			const float color = (valueGrid[w*i+j] - f_min) / (f_max - f_min);
-			//const int it = i * 500 * 3 + j * 3;
-			dc->SetPen(wxColor(static_cast<int> (color * 255),
-				0, static_cast<int> ((1.0 - color) * 255)));
-			dc->DrawPoint(j, i);
+			const float color = (valueGrid[plot_w*i + j] - f_min) / (f_max - f_min);
+			const int it = i * plot_w * 3 + j * 3;
+			pixels[it] = static_cast<unsigned char> (color * 255);
+			pixels[it + 1] = 0;
+			pixels[it + 2] = static_cast<unsigned char> ((1.0 - color) * 255);
 		}
 	}
 
+	const wxBitmap colorMap(image, 24);
+	memDC.DrawBitmap(colorMap, 0, 0);
+
 	// kontury (póki co ustawione na 5 poziomic)
-	dc->SetPen(wxPen(*wxBLACK_PEN));
+	//dc->SetPen(wxPen(*wxBLACK_PEN));
 	int NoLevels = 5;
 	for (int i = 0; i < NoLevels; i++)
 	{
 		float threshold = f_min + (i + 1.0) * (f_max - f_min) / (NoLevels + 1.0);
 
-		for (int x = 0; x < w; x++)
-			for (int y = 0; y < h; y++)
-				if (valueGrid[w*y+x] > threshold)
+		for (int x = 0; x < plot_w; x++)
+			for (int y = 0; y < plot_h; y++)
+				if (valueGrid[plot_w*y + x] > threshold)
 				{
 					for (int a = -1; a <= 1; a++)
 						for (int b = -1; b <= 1; b++)
-							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < h) && (b + x < w) &&
-								(valueGrid[w*(a + y)+b + x] < threshold))
-								dc->DrawPoint(x, y);
+							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < plot_h) && (b + x < plot_w) &&
+								(valueGrid[plot_w*(a + y)+b + x] < threshold))
+								memDC.DrawPoint(x, y);
 				}
-	}*/
+	}
+	dc->Blit(20, 20, plot_w, plot_h, &memDC, 0, 0);
 }
 
 void ChartClass::drawChart(wxDC* dc)

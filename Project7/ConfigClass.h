@@ -11,7 +11,6 @@ private:
     double x0, y0, x1, y1, z0, z1;
     double x_start, x_stop;
     double y_start, y_stop;
-    double alpha, beta, gamma;
     int f_type;
     int zoom;
     int x_rot, y_rot, z_rot;
@@ -28,9 +27,6 @@ public:
     void   Set_y_start(double v) { y_start = v; };
     double Get_y_stop() { return y_stop; };
     void   Set_y_stop(double v) { y_stop = v; };
-    void Set_Alpha(int a) { alpha = a; };
-    void Set_Beta(int b) { beta = b; };
-    void Set_Gamma(int c) { gamma = c; };
     double Get_x0() { return x0; };
     void   Set_x0(float v) { x0 = v; };
     double Get_y0() { return y0; };

@@ -82,7 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\babar\wxWidgets-3.1.4\include\;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\develop\wxWidgets-3.0.5\include\msvc;D:\develop\wxWidgets-3.0.5\include\;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\develop\wxWidgets-3.0.5\lib\vc_x64_lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -154,12 +155,14 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GUIMyFrame.cpp" />
+    <ClCompile Include="Printout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChartClass.h" />
     <ClInclude Include="ConfigClass.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="GUIMyFrame.h" />
+    <ClInclude Include="Printout.h" />
     <ClInclude Include="vecmat.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
