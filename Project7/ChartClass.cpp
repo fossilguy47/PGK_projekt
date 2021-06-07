@@ -1,7 +1,7 @@
 ﻿#include <wx/dc.h>
-#include <memory>
 #include "ChartClass.h"
 #include "vecmat.h"
+
 #define PI 3.14159
 
 struct Point
@@ -216,16 +216,21 @@ void ChartClass::drawContourMap(wxDC *dc)
 	memDC.SetPen(*wxBLACK_PEN);
 	memDC.SetBrush(*wxWHITE_BRUSH);*/
 	int w, h;
+
+	// skalowanie mapy konturowej
+	// kiedy długość > szerokość
 	if (cfg->Get_x1() - cfg->Get_x0() > cfg->Get_y1() - cfg->Get_y0())
 	{
 		w = 500;
 		h = static_cast<int>((cfg->Get_y1() - cfg->Get_y0()) / (cfg->Get_x1() - cfg->Get_x0()) * w);
 	}
+	// kiedy szerokość > długość
 	else if (cfg->Get_x1() - cfg->Get_x0() < cfg->Get_y1() - cfg->Get_y0())
 	{
 		h = 500;
 		w = static_cast<int>((cfg->Get_x1() - cfg->Get_x0()) / (cfg->Get_y1() - cfg->Get_y0()) * h);
 	}
+	// kiedy długość == szerokość
 	else
 	{
 		w = 500;
@@ -242,15 +247,15 @@ void ChartClass::drawContourMap(wxDC *dc)
 		valueGrid[i] = new float[w];
 	}
 
-	double x_start = cfg->Get_x_start();
-	double x_stop = cfg->Get_x_stop();
-	double y_start = cfg->Get_y_start();
-	double y_stop = cfg->Get_y_stop();
-	double x_step = (x_stop - x_start) / (w-1.0);
-	double y_step = (y_stop - y_start) / (h-1.0);
+	double x0 = cfg->Get_x0();
+	double x1 = cfg->Get_x1();
+	double y0 = cfg->Get_y0();
+	double y1 = cfg->Get_y1();
+	double x_step = (x1 - x0) / (w-1.0);
+	double y_step = (y1 - y0) / (h-1.0);
 	for (int i = 0; i < h; i++)
 		for (int j = 0; j < w; j++)
-			valueGrid[i][j] = getFunctionValue(x_start+i*x_step, y_start+j*y_step);
+			valueGrid[i][j] = getFunctionValue(x0+i*x_step, y0+j*y_step);
 
 	double f_min = valueGrid[0][0], f_max = valueGrid[0][0];
 	for (int i = 0; i < h; i++)
@@ -273,6 +278,7 @@ void ChartClass::drawContourMap(wxDC *dc)
 		}
 	}
 
+	// kontury (póki co ustawione na 5 poziomic)
 	dc->SetPen(wxPen(*wxBLACK_PEN));
 	int NoLevels = 5;
 	for (int i = 0; i < NoLevels; i++)
@@ -295,5 +301,57 @@ void ChartClass::drawContourMap(wxDC *dc)
 	for (int i = 0; i < h; ++i)
 		delete[] valueGrid[i];
 	delete[] valueGrid;
+	/*std::vector<float> valueGrid;
+	valueGrid.clear();
+
+	double x_start = cfg->Get_x_start();
+	double x_stop = cfg->Get_x_stop();
+	double y_start = cfg->Get_y_start();
+	double y_stop = cfg->Get_y_stop();
+	double x_step = (x_stop - x_start) / (w - 1.0);
+	double y_step = (y_stop - y_start) / (h - 1.0);
+	for (int i = 0; i < h; i++)
+		for (int j = 0; j < w; j++)
+			valueGrid.push_back(getFunctionValue(x_start + i * x_step, y_start + j * y_step));
+
+	double f_min = valueGrid[0], f_max = valueGrid[0];
+	for (int i = 0; i < h; i++)
+		for (int j = 0; j < w; j++)
+		{
+			f_min = valueGrid[w*i+j] < f_min ? valueGrid[w*i+j] : f_min;
+			f_max = valueGrid[w*i+j] > f_max ? valueGrid[w*i+j] : f_max;
+		}
+
+	// część odpowiedzialna za kolorowanie mapy
+	for (int i = 0; i < h; i++)
+	{
+		for (int j = 0; j < w; j++)
+		{
+			const float color = (valueGrid[w*i+j] - f_min) / (f_max - f_min);
+			//const int it = i * 500 * 3 + j * 3;
+			dc->SetPen(wxColor(static_cast<int> (color * 255),
+				0, static_cast<int> ((1.0 - color) * 255)));
+			dc->DrawPoint(j, i);
+		}
+	}
+
+	// kontury (póki co ustawione na 5 poziomic)
+	dc->SetPen(wxPen(*wxBLACK_PEN));
+	int NoLevels = 5;
+	for (int i = 0; i < NoLevels; i++)
+	{
+		float threshold = f_min + (i + 1.0) * (f_max - f_min) / (NoLevels + 1.0);
+
+		for (int x = 0; x < w; x++)
+			for (int y = 0; y < h; y++)
+				if (valueGrid[w*y+x] > threshold)
+				{
+					for (int a = -1; a <= 1; a++)
+						for (int b = -1; b <= 1; b++)
+							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < h) && (b + x < w) &&
+								(valueGrid[w*(a + y)+b + x] < threshold))
+								dc->DrawPoint(x, y);
+				}
+	}*/
 }
 

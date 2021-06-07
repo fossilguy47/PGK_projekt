@@ -2,6 +2,7 @@
 #define __ChartClass__
 
 #include <memory>
+#include <vector>
 #include "ConfigClass.h"
 
 class Matrix;
