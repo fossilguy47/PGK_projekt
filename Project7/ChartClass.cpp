@@ -102,15 +102,6 @@ Matrix ChartClass::createTransformationMatrix() {
 	return T * R * S;
 }
 
-std::vector<Segment> ChartClass::getAxes(wxDC* dc) {
-	std::vector<Segment> axes;
-	axes.clear();
-	axes.push_back(Segment(Point(0, 0, 0), Point(150, 0, 0)));
-	axes.push_back(Segment(Point(0, 0, 0), Point(0, 150, 0)));
-	axes.push_back(Segment(Point(0, 0, 0), Point(0, 0, 200)));
-	return axes;
-}
-
 void ChartClass::Draw(wxDC* dc) 
 {
 	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
@@ -123,6 +114,7 @@ void ChartClass::Draw(wxDC* dc)
 	else 
 	{
 		drawAxes(dc);
+		drawChart(dc);
 	}
 }
 
@@ -147,18 +139,8 @@ double ChartClass::getFunctionValue(double x, double y)
 	}
 }
 
-void ChartClass::drawLine2d(wxDC* dc, Matrix t, double x1, double y1, double x2, double y2,
-							double z1, double z2)
+void ChartClass::transformVector(Vector& v)
 {
-
-}
-
-void ChartClass::drawAxes(wxDC* dc) {
-	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
-	dc->SetTextForeground(wxColour(0,0,0));
-	dc->Clear();
-	dc->SetPen(wxPen(RGB(0, 0, 0)));
-
 	//Macierz transformacji
 	Matrix T = createTransformationMatrix();
 	//Dodatkowa macierz translacji, umieszczajaca obiekt w centrum panelu - połowa wysokości i szerokości
@@ -169,40 +151,45 @@ void ChartClass::drawAxes(wxDC* dc) {
 	C.data[0][3] = 0.5;
 	C.data[1][3] = 0.5;
 
-	////PÓKI CO W DATA SĄ TYLKO OSIE (w podobny sposób bedzie chyba wykres najłatwiej zrobić)
-	std::vector<Segment> data = getAxes(dc);
-	//For przechodzacy przez wszystkie rysowane odcinki
-	for (auto& line : data) {
-		//Poczatkowy i koncowy punkt odcinka
-		Vector p0, p1;
-		//Ustawienie punktu p0owego i koncowego odcinka
-		p0.Set(line.begin.mX, line.begin.mY, line.begin.mZ);
-		p1.Set(line.end.mX, line.end.mY, line.end.mZ);
-		//Przemonozenie obu punktów przez macierze transformacji
-		p0 = T * p0;
-		p1 = T * p1;
-		//Rzutowanie punktów na płaszczyznę ekranu, "spłaszczenie" osi Z
-		p0.Set(p0.GetX() / p0.GetZ(), p0.GetY() / p0.GetZ(), p0.GetZ());
-		p1.Set(p1.GetX() / p1.GetZ(), p1.GetY() / p1.GetZ(), p1.GetZ());
-		//Dodatkowa translacja określająca środek ekranu
-		p0 = C * p0;
-		p1 = C * p1;
-		dc->DrawLine(p0.GetX() * _w, p0.GetY() * _h, p1.GetX() * _w, p1.GetY() * _h);
-	}
+	//Przemonozenie obu punktów przez macierze transformacji
+	v = T * v;
+	//Rzutowanie punktów na płaszczyznę ekranu, "spłaszczenie" osi Z
+	v.Set(v.GetX() / v.GetZ(), v.GetY() / v.GetZ(), v.GetZ());
+	//Dodatkowa translacja określająca środek ekranu
+	v = C * v;
+}
+
+void ChartClass::drawLine(wxDC* dc, Vector p0, Vector p1)
+{
+	transformVector(p0);
+	transformVector(p1);
+	dc->DrawLine(p0.GetX() * _w, p0.GetY() * _h, p1.GetX() * _w, p1.GetY() * _h);
+}
+
+void ChartClass::drawAxes(wxDC* dc) {
+	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
+	dc->SetTextForeground(wxColour(0,0,0));
+	dc->Clear();
+	dc->SetPen(wxPen(RGB(0, 0, 0)));
+	//Poczatkowy i koncowy punkt odcinka
+	Vector p0, x1, y1, z1;
+	//Ustawienie punktu p0owego i koncowego odcinka
+	p0.Set(0,0,0);
+	x1.Set(150,0,0);
+	y1.Set(0, 150, 0);
+	z1.Set(0, 0, 200);
+	drawLine(dc, p0, x1);
+	drawLine(dc, p0, y1);
+	drawLine(dc, p0, z1);
+	//Text osi
 	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	Vector x_text, y_text, z_text;
 	x_text.Set(150, -10, 0);
 	y_text.Set(-10, 150, 0);
 	z_text.Set(10, 0, 200);
-	x_text = T * x_text;
-	y_text = T * y_text;
-	z_text = T * z_text;
-	x_text.Set(x_text.GetX() / x_text.GetZ(), x_text.GetY() / x_text.GetZ(), x_text.GetZ());
-	y_text.Set(y_text.GetX() / y_text.GetZ(), y_text.GetY() / y_text.GetZ(), y_text.GetZ());
-	z_text.Set(z_text.GetX() / z_text.GetZ(), z_text.GetY() / z_text.GetZ(), z_text.GetZ());
-	x_text = C * x_text;
-	y_text = C * y_text;
-	z_text = C * z_text;
+	transformVector(x_text);
+	transformVector(y_text);
+	transformVector(z_text);
 	dc->DrawText("X", wxPoint(x_text.GetX() * _w, x_text.GetY() * _h));
 	dc->DrawText("Y", wxPoint(y_text.GetX() * _w, y_text.GetY() * _h));
 	dc->DrawText("Z", wxPoint(z_text.GetX() * _w, z_text.GetY() * _h));
@@ -290,10 +277,56 @@ void ChartClass::drawContourMap(wxDC *dc)
 								dc->DrawPoint(x,y);
 				}
 	}
-	
-			
+
 	for (int i = 0; i < h; ++i)
 		delete[] valueGrid[i];
 	delete[] valueGrid;
 }
+
+void ChartClass::drawChart(wxDC* dc)
+{
+	double step = 2;
+	double x0 = cfg->Get_x0();
+	double x1 = cfg->Get_x1();
+	double y0 = cfg->Get_y0();
+	double y1 = cfg->Get_y1();
+	int i, j;
+	dc->SetPen(wxPen(RGB(0, 0, 0)));
+	for (i = 0; i < (x1-x0)/step ; i++)
+	{
+		for (j = 0; j < (y1 - y0) / step; j++)
+		{
+			Vector p0, p1, p2;
+			//Ustawienie punktu początkowego i koncowego odcinka
+			p0.Set(x0 + step * i, y0 + step * j, getFunctionValue(x0 + step * i, y0 + step * j));
+			p1.Set(x0 + step * (i+1), y0 + step * j, getFunctionValue(x0 + step * (i + 1), y0 + step * j));
+			p2.Set(x0 + step * i, y0 + step * (j + 1), getFunctionValue(x0 + step * i, y0 + step * (j + 1)));
+			//Rysowanie połączenia w prawym i dolnym punktem
+			drawLine(dc, p0, p1);
+			drawLine(dc, p0, p2);
+		}
+	}
+	int i_max = i;
+	int j_max = j;
+	//Dorysowanie skrajnych linii na wykresie
+	for (i = 0; i < (x1 - x0) / step; i++)
+	{
+		Vector p0, p1;
+		//Ustawienie punktu początkowego i koncowego odcinka
+		p0.Set(x0 + step * i, y0 + step * j_max, getFunctionValue(x0 + step * i, y0 + step * j_max));
+		p1.Set(x0 + step * (i + 1), y0 + step * j_max, getFunctionValue(x0 + step * (i + 1), y0 + step * j_max));
+		//Rysowanie połączenia w prawym i dolnym punktem
+		drawLine(dc, p0, p1);
+	}
+	for (j = 0; j < (y1 - y0) / step; j++)
+	{
+		Vector p0, p1;
+		//Ustawienie punktu początkowego i koncowego odcinka
+		p0.Set(x0 + step * i_max, y0 + step * j, getFunctionValue(x0 + step * i_max, y0 + step * j));
+		p1.Set(x0 + step * i_max, y0 + step * (j + 1), getFunctionValue(x0 + step * i_max, y0 + step * (j+1)));
+		//Rysowanie połączenia w prawym i dolnym punktem
+		drawLine(dc, p0, p1);
+	}
+}
+
 

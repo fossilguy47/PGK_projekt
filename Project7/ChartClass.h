@@ -5,6 +5,7 @@
 #include "ConfigClass.h"
 
 class Matrix;
+class Vector;
 struct Segment;
 
 class ChartClass
@@ -12,15 +13,15 @@ class ChartClass
 private:
     std::shared_ptr<ConfigClass> cfg;
     int _w, _h;
-    void drawLine2d(wxDC* dc, Matrix t, double x1, double y1, double x2, double y2, 
-                        double z1, double z2);
-    std::vector<Segment> getAxes(wxDC* dc);
 public:
     ChartClass(std::shared_ptr<ConfigClass> c, int w = 600, int h = 400);
-    void Draw(wxDC* dc);
-    void drawContourMap(wxDC *dc);
-    void drawAxes(wxDC* dc);
     Matrix createTransformationMatrix();
+    void Draw(wxDC* dc);
+    void transformVector(Vector& v);
+    void drawLine(wxDC* dc, Vector p0, Vector p1);
+    void drawAxes(wxDC* dc);
+    void drawContourMap(wxDC* dc);
+    void drawChart(wxDC* dc);
     double getFunctionValue(double x, double y);
 };
 
