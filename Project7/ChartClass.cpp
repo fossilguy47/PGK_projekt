@@ -78,9 +78,9 @@ Matrix ChartClass::createTransformationMatrix() {
 	Tx = 0.0;
 	Ty = 0.0;
 	Tz = 2.0;
-	Rx = 45 + cfg->Get_x_rot() * 360.0 / 100.0;
-	Ry = 0 + cfg->Get_y_rot() * 360.0 / 100.0;
-	Rz = 135 + cfg->Get_z_rot() * 360.0 / 100.0;
+	Rx = cfg->Get_x_rot() * 360.0 / 100.0;
+	Ry = cfg->Get_y_rot() * 360.0 / 100.0;
+	Rz = cfg->Get_z_rot() * 360.0 / 100.0;
 	Sx = (cfg->Get_zoom()/50.0) / 100.0;
 	Sy = (cfg->Get_zoom() / 50.0) / 100.0;
 	Sz = (cfg->Get_zoom() / 50.0) / 100.0;
@@ -146,7 +146,6 @@ void ChartClass::transformVector(Vector& v)
 {
 	//Macierz transformacji
 	Matrix T = createTransformationMatrix();
-	//Dodatkowa macierz translacji, umieszczajaca obiekt w centrum panelu - połowa wysokości i szerokości
 	Matrix C;
 	C.data[0][0] = 1;
 	C.data[1][1] = 1;
