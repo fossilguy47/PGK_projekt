@@ -351,17 +351,21 @@ void ChartClass::drawChart(wxDC* dc)
 	double x1 = cfg->Get_x1();
 	double y0 = cfg->Get_y0();
 	double y1 = cfg->Get_y1();
+	double z_range = z_max - z_min;
 	int i, j;
-	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	for (i = 0; i < (x1-x0)/step ; i++)
 	{
 		for (j = 0; j < (y1 - y0) / step; j++)
 		{
 			Vector p0, p1, p2;
 			//Ustawienie punktu początkowego i koncowego odcinka
-			p0.Set(x0 + step * i, y0 + step * j, getFunctionValue(x0 + step * i, y0 + step * j));
-			p1.Set(x0 + step * (i+1), y0 + step * j, getFunctionValue(x0 + step * (i + 1), y0 + step * j));
-			p2.Set(x0 + step * i, y0 + step * (j + 1), getFunctionValue(x0 + step * i, y0 + step * (j + 1)));
+			double v0 = getFunctionValue(x0 + step * i, y0 + step * j);
+			double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j);
+			double v2 = getFunctionValue(x0 + step * i, y0 + step * (j + 1));
+			dc->SetPen(wxPen(RGB(255 * (v0 - z_min) / z_range, 0, 255 - 255 * (v0-z_min) / z_range)));
+			p0.Set(x0 + step * i, y0 + step * j, v0);
+			p1.Set(x0 + step * (i+1), y0 + step * j, v1);
+			p2.Set(x0 + step * i, y0 + step * (j + 1), v2);
 			//Rysowanie połączenia w prawym i dolnym punktem
 			drawLine(dc, p0, p1);
 			drawLine(dc, p0, p2);
