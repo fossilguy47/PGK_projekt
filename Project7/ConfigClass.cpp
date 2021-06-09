@@ -23,4 +23,5 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
     x_rot = 13;
     y_rot = 0.0;
     z_rot = 38;
+    step = 10;
 }

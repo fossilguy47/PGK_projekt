@@ -31,6 +31,9 @@ public:
     std::vector<float> Get_valueGrid() { return valueGrid; }
     float Get_z_max() { return z_max; }
     float Get_z_min() { return z_min; }
+    /* wstawi³am t¹ funkcjê do ChartClass, ale nie wiem czy nie lepiej,
+     aby ta funkcja znajdowa³a siê w GUIMyFrame*/
+    void drawValueBar(wxDC *dc);
     //void Scale_valueGrid();
 };
 

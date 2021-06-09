@@ -251,12 +251,12 @@ void ChartClass::initializeValueGrid()
 	}
 	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
 	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
-	z_min = z_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y0());
+	z_min = z_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
 	for (int i = 0; i < plot_h; i++) 
 	{
 		for (int j = 0; j < plot_w; j++)
 		{
-			float value = getFunctionValue(cfg->Get_x0() + i * x_step, cfg->Get_y0() + j * y_step);
+			float value = getFunctionValue(cfg->Get_x0() + j * x_step, cfg->Get_y1() - i * y_step);
 			/* progowanie wartości (na razie okomentowane, by wychodziły wartości
 				f_min i fmax nieograniczone przez z0 i z1)*/
 			/*if (value > cfg->Get_z1())
@@ -281,29 +281,31 @@ void ChartClass::initializeValueGrid()
 
 void ChartClass::drawContourMap(wxDC *dc)
 {
+	dc->SetBackground(wxBrush(RGB(255, 255, 255)));
+	dc->SetTextForeground(wxColour(0, 0, 0));
+	dc->Clear();
+	dc->SetPen(*wxBLACK_PEN);
 
 	initializeValueGrid();
+	dc->DrawRectangle(wxRect(99, 19, plot_w + 2, plot_h + 2));
+
 	wxBitmap bitmap;
 	wxImage image;
 	bitmap.Create(plot_w, plot_h, 24);
 	image.Create(plot_w, plot_h);
-
-	dc->Clear();
+	
 	wxMemoryDC memDC;
 	memDC.SelectObject(bitmap);
-	memDC.Clear();
-	memDC.SetPen(*wxBLACK_PEN);
+	memDC.SetPen(wxColor(50, 50, 50));
 	memDC.SetBrush(*wxWHITE_BRUSH);
 	memDC.SetBackground(*wxWHITE_BRUSH);
-	memDC.DrawRectangle(20, 20, plot_w, plot_h);
-	memDC.SetClippingRegion(wxRect(20, 20, plot_w, plot_h));
-	
+
 	double f_min = valueGrid[0], f_max = valueGrid[0];
 	for (int i = 0; i < plot_h; i++)
 		for (int j = 0; j < plot_w; j++)
 		{
-			f_min = valueGrid[plot_w*i + j] < f_min ? valueGrid[plot_w*i + j] : f_min;
-			f_max = valueGrid[plot_w*i + j] > f_max ? valueGrid[plot_w*i + j] : f_max;
+			f_min = valueGrid[plot_w * i + j] < f_min ? valueGrid[plot_w * i + j] : f_min;
+			f_max = valueGrid[plot_w * i + j] > f_max ? valueGrid[plot_w * i + j] : f_max;
 		}
 
 	// część odpowiedzialna za kolorowanie mapy
@@ -312,7 +314,7 @@ void ChartClass::drawContourMap(wxDC *dc)
 	{
 		for (int j = 0; j < plot_w; j++)
 		{
-			const float color = (valueGrid[plot_w*i + j] - f_min) / (f_max - f_min);
+			const float color = (valueGrid[plot_w * i + j] - f_min) / (f_max - f_min);
 			const int it = i * plot_w * 3 + j * 3;
 			pixels[it] = static_cast<unsigned char> (color * 255);
 			pixels[it + 1] = 0;
@@ -324,7 +326,7 @@ void ChartClass::drawContourMap(wxDC *dc)
 	memDC.DrawBitmap(colorMap, 0, 0);
 
 	// kontury (póki co ustawione na 5 poziomic)
-	//dc->SetPen(wxPen(*wxBLACK_PEN));
+	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	int NoLevels = 5;
 	for (int i = 0; i < NoLevels; i++)
 	{
@@ -332,16 +334,72 @@ void ChartClass::drawContourMap(wxDC *dc)
 
 		for (int x = 0; x < plot_w; x++)
 			for (int y = 0; y < plot_h; y++)
-				if (valueGrid[plot_w*y + x] > threshold)
+				if (valueGrid[plot_w * y + x] > threshold)
 				{
 					for (int a = -1; a <= 1; a++)
 						for (int b = -1; b <= 1; b++)
 							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < plot_h) && (b + x < plot_w) &&
-								(valueGrid[plot_w*(a + y)+b + x] < threshold))
+								(valueGrid[plot_w * (a + y) + b + x] < threshold))
 								memDC.DrawPoint(x, y);
 				}
 	}
-	dc->Blit(20, 20, plot_w, plot_h, &memDC, 0, 0);
+
+	memDC.SetPen(*wxBLACK_PEN);
+	
+	// kratka zaprogramowana na liczbę kroków
+	/*
+	int num_of_steps = 10;
+	int w_step = static_cast<int>(plot_w / num_of_steps);
+	int h_step = static_cast<int>(plot_h / num_of_steps);
+
+	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / num_of_steps;
+	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / num_of_steps;*/
+
+
+	// kratka oraz wartości 
+	//for (int i = 0; i < plot_w; i+=w_step)  memDC.DrawLine(i, 0, i, plot_h);
+	//for (int i = 0; i < plot_h; i +=w_step)  memDC.DrawLine(0, i, plot_w, i);
+	/*dc->SetFont(*wxSMALL_FONT);
+	dc->SetPen(*wxBLACK_PEN);
+	for (int i = 0; i <= plot_w; i += w_step)
+	{
+		dc->DrawText(wxString::Format("%.2f", cfg->Get_x0() + (i/w_step)*x_step), 100 + i, 40 + plot_h);
+		dc->DrawLine(100 + i, 20 + plot_h, 100 + i, 30 + plot_h);
+		//memDC.DrawLine(i, plot_h - 10, i, plot_h); // krótka kreska
+		memDC.DrawLine(i, 0, i, plot_h);
+	}
+	for (int i = 0; i <= plot_h; i += h_step)
+	{
+		dc->DrawText(wxString::Format("%.2f", cfg->Get_y1() - (i / h_step) *y_step), 50, 13 + i);
+		dc->DrawLine(89, 20 + i, 99, 20 + i);
+		//memDC.DrawLine(0, i, 10, i); / krótka kreska
+		memDC.DrawLine(0, i, plot_w, i);
+	}*/
+
+	// kratka zaprogramowana na wartość pojedynczego kroku
+
+	int step = cfg->Get_step();
+	int w_step = static_cast<int>(plot_w*step / (cfg->Get_x1()- cfg->Get_x0()));
+	int h_step = static_cast<int>(plot_h*step / (cfg->Get_y1() - cfg->Get_y0()));
+
+	dc->SetFont(*wxSMALL_FONT);
+	dc->SetPen(*wxBLACK_PEN);
+	for (int i = 0; i <= plot_w; i += w_step)
+	{
+		dc->DrawText(wxString::Format("%10.2f", cfg->Get_x0() + (i / w_step) * step), 70 + i, 40 + plot_h);
+		dc->DrawLine(100 + i, 20 + plot_h, 100 + i, 30 + plot_h);
+		//memDC.DrawLine(i, plot_h - 10, i, plot_h); // krótka kreska
+		memDC.DrawLine(i, 0, i, plot_h);
+	}
+	for (int i = 0; i <= plot_h; i += h_step)
+	{
+		dc->DrawText(wxString::Format("%10.2f", cfg->Get_y0() + (i / h_step) * step), 30, plot_h+13-i);
+		dc->DrawLine(89, plot_h+20-i, 99, plot_h+20-i);
+		//memDC.DrawLine(0, i, 10, i); / krótka kreska
+		memDC.DrawLine(0, plot_h-i, plot_w, plot_h-i);
+	}
+
+	dc->Blit(100, 20, plot_w, plot_h, &memDC, 0, 0);
 }
 
 void ChartClass::drawChart(wxDC* dc)
@@ -353,7 +411,7 @@ void ChartClass::drawChart(wxDC* dc)
 	double y1 = cfg->Get_y1();
 	double z_range = z_max - z_min;
 	int i, j;
-	for (i = 0; i < (x1-x0)/step ; i++)
+	for (i = 0; i < (x1 - x0) / step; i++)
 	{
 		for (j = 0; j < (y1 - y0) / step; j++)
 		{
@@ -362,9 +420,9 @@ void ChartClass::drawChart(wxDC* dc)
 			double v0 = getFunctionValue(x0 + step * i, y0 + step * j);
 			double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j);
 			double v2 = getFunctionValue(x0 + step * i, y0 + step * (j + 1));
-			dc->SetPen(wxPen(RGB(255 * (v0 - z_min) / z_range, 0, 255 - 255 * (v0-z_min) / z_range)));
+			dc->SetPen(wxPen(RGB(255 * (v0 - z_min) / z_range, 0, 255 - 255 * (v0 - z_min) / z_range)));
 			p0.Set(x0 + step * i, y0 + step * j, v0);
-			p1.Set(x0 + step * (i+1), y0 + step * j, v1);
+			p1.Set(x0 + step * (i + 1), y0 + step * j, v1);
 			p2.Set(x0 + step * i, y0 + step * (j + 1), v2);
 			//Rysowanie połączenia w prawym i dolnym punktem
 			drawLine(dc, p0, p1);
@@ -388,10 +446,52 @@ void ChartClass::drawChart(wxDC* dc)
 		Vector p0, p1;
 		//Ustawienie punktu początkowego i koncowego odcinka
 		p0.Set(x0 + step * i_max, y0 + step * j, getFunctionValue(x0 + step * i_max, y0 + step * j));
-		p1.Set(x0 + step * i_max, y0 + step * (j + 1), getFunctionValue(x0 + step * i_max, y0 + step * (j+1)));
+		p1.Set(x0 + step * i_max, y0 + step * (j + 1), getFunctionValue(x0 + step * i_max, y0 + step * (j + 1)));
 		//Rysowanie połączenia w prawym i dolnym punktem
 		drawLine(dc, p0, p1);
 	}
 }
+
+// funkcja rysująca legendę kolorów, póki co znajduje się ona po prawej stronie panelu
+void ChartClass::drawValueBar(wxDC * dc)
+{
+	dc->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+	wxBitmap bitmap;
+	wxImage image;
+	bitmap.Create(20, _h - 20, 24);
+	image.Create(20, _h - 20);
+
+	dc->SetPen(*wxBLACK_PEN);
+	// obramowanie
+	dc->DrawRectangle(_w - 41, 39, 22, _h - 78);
+	dc->DrawLine(_w - 51, 39, _w - 41, 39);
+	dc->DrawLine(_w - 51, _h - 40, _w - 41, _h - 40);
+	
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_z_max()), _w - 125, 30);
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_z_min()), _w - 125, _h - 50);
+	
+	wxMemoryDC memDC;
+	memDC.SelectObject(bitmap);
+	memDC.SetBrush(*wxWHITE_BRUSH);
+	memDC.SetBackground(*wxWHITE_BRUSH);
+
+	// rysowanie legendy
+	unsigned char* pixels = image.GetData();
+	for (int i = 0; i < _h - 40; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			const float color = static_cast<float>(i) / static_cast<float>(_h - 40);
+			const int it = i * 20 * 3 + j * 3;
+			pixels[it] = static_cast<unsigned char> ((1.0 - color) * 255);
+			pixels[it + 1] = 0;
+			pixels[it + 2] = static_cast<unsigned char> (color * 255);
+		}
+	}
+	const wxBitmap colorMap(image, 24);
+	memDC.DrawBitmap(colorMap, 0, 0);
+	dc->Blit(_w - 40, 40, 20, _h - 80, &memDC, 0, 0);
+}
+
 
 

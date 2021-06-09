@@ -24,6 +24,7 @@
 #include <wx/button.h>
 #include <wx/spinctrl.h>
 #include <wx/checkbox.h>
+#include <wx/wrapsizer.h>
 #include <wx/slider.h>
 #include <wx/frame.h>
 
@@ -59,6 +60,8 @@ class MyFrame : public wxFrame
 		wxStaticText* f_max_txt;
 		wxButton* draw_button;
 		wxCheckBox* contour_checkBox;
+		wxStaticText* step_staticText;
+		wxSpinCtrl* step_spinCtrl;
 		wxStaticText* m_staticText2313;
 		wxSlider* zoom_slider;
 		wxStaticText* m_staticText25;
@@ -83,6 +86,7 @@ class MyFrame : public wxFrame
 		virtual void z1_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void contour_checkBoxOnCheckBox( wxCommandEvent& event ) { event.Skip(); }
+		virtual void step_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void zoom_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
 		virtual void x_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
 		virtual void y_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
@@ -93,7 +97,7 @@ class MyFrame : public wxFrame
 
 	public:
 
-		MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Wykresy 3D"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1000,600 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Wykresy 3D"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1169,657 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MyFrame();
 

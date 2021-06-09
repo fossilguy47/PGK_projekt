@@ -14,7 +14,7 @@ private:
     int f_type;
     int zoom;
     int x_rot, y_rot, z_rot;
-
+    int step;
 public:
     ConfigClass(GUIMyFrame* wnd);
     bool Get_contour() { return is_contour; };
@@ -49,6 +49,8 @@ public:
     void Set_y_rot(int v) { y_rot = v; };
     int Get_z_rot() { return z_rot; };
     void Set_z_rot(int v) { z_rot = v; };
+    void Set_step(int v) { step = v; }
+    int Get_step() { return step; }
 };
 
 #endif
