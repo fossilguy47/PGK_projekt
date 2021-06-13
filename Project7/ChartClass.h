@@ -15,7 +15,7 @@ private:
     std::shared_ptr<ConfigClass> cfg;
     int _w, _h;
     int plot_w, plot_h;
-    float z_max, z_min;
+    float f_max, f_min;
     std::vector<float> valueGrid;
 public:
     ChartClass(std::shared_ptr<ConfigClass> c, int w = 600, int h = 400);
@@ -29,12 +29,11 @@ public:
     double getFunctionValue(double x, double y);
     void initializeValueGrid();
     std::vector<float> Get_valueGrid() { return valueGrid; }
-    float Get_z_max() { return z_max; }
-    float Get_z_min() { return z_min; }
+    float Get_f_max() { return f_max; }
+    float Get_f_min() { return f_min; }
     /* wstawi³am t¹ funkcjê do ChartClass, ale nie wiem czy nie lepiej,
      aby ta funkcja znajdowa³a siê w GUIMyFrame*/
     void drawValueBar(wxDC *dc);
-    //void Scale_valueGrid();
 };
 
 #endif

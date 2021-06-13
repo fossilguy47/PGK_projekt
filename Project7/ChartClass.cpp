@@ -197,37 +197,9 @@ void ChartClass::drawAxes(wxDC* dc) {
 	dc->DrawText("Z", wxPoint(z_text.GetX() * _w, z_text.GetY() * _h));
 }
 
-/*void ChartClass::Scale_valueGrid()
-{
-	double x0 = cfg->Get_x0();
-	double x1 = cfg->Get_x1();
-	double y0 = cfg->Get_y0();
-	double y1 = cfg->Get_y1();
-	// skalowanie mapy konturowej
-	// kiedy długość > szerokość
-	if (x1 - x0 > y1 - y0)
-	{
-		plot_w = 500;
-		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
-	}
-	// kiedy szerokość > długość
-	else if (x1 - x0 < y1 - y0)
-	{
-		plot_h = 500;
-		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
-	}
-	// kiedy długość == szerokość
-	else
-	{
-		plot_w = 500;
-		plot_h = 500;
-	}
-}*/
-
 void ChartClass::initializeValueGrid()
 {
 	valueGrid.clear();
-	//Scale_valueGrid();
 	double x0 = cfg->Get_x0();
 	double x1 = cfg->Get_x1();
 	double y0 = cfg->Get_y0();
@@ -251,7 +223,7 @@ void ChartClass::initializeValueGrid()
 	}
 	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
 	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
-	z_min = z_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
+	f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
 	for (int i = 0; i < plot_h; i++) 
 	{
 		for (int j = 0; j < plot_w; j++)
@@ -272,8 +244,8 @@ void ChartClass::initializeValueGrid()
 				valueGrid.push_back(value);
 			}*/
 			valueGrid.push_back(value);
-			z_max = z_max < value ? value : z_max;
-			z_min = z_min > value ? value : z_min;
+			f_max = f_max < value ? value : f_max;
+			f_min = f_min > value ? value : f_min;
 		}
 	}
 }
@@ -300,13 +272,13 @@ void ChartClass::drawContourMap(wxDC *dc)
 	memDC.SetBrush(*wxWHITE_BRUSH);
 	memDC.SetBackground(*wxWHITE_BRUSH);
 
-	double f_min = valueGrid[0], f_max = valueGrid[0];
+	/*double f_min = valueGrid[0], f_max = valueGrid[0];
 	for (int i = 0; i < plot_h; i++)
 		for (int j = 0; j < plot_w; j++)
 		{
 			f_min = valueGrid[plot_w * i + j] < f_min ? valueGrid[plot_w * i + j] : f_min;
 			f_max = valueGrid[plot_w * i + j] > f_max ? valueGrid[plot_w * i + j] : f_max;
-		}
+		}*/
 
 	// część odpowiedzialna za kolorowanie mapy
 	unsigned char* pixels = image.GetData();
@@ -380,7 +352,7 @@ void ChartClass::drawChart(wxDC* dc)
 	double x1 = cfg->Get_x1();
 	double y0 = cfg->Get_y0();
 	double y1 = cfg->Get_y1();
-	double z_range = z_max - z_min;
+	double z_range = f_max - f_min;
 	int i, j;
 	for (i = 0; i < (x1 - x0) / step; i++)
 	{
@@ -391,7 +363,7 @@ void ChartClass::drawChart(wxDC* dc)
 			double v0 = getFunctionValue(x0 + step * i, y0 + step * j);
 			double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j);
 			double v2 = getFunctionValue(x0 + step * i, y0 + step * (j + 1));
-			dc->SetPen(wxPen(RGB(255 * (v0 - z_min) / z_range, 0, 255 - 255 * (v0 - z_min) / z_range)));
+			dc->SetPen(wxPen(RGB(255 * (v0 - f_min) / z_range, 0, 255 - 255 * (v0 - f_min) / z_range)));
 			p0.Set(x0 + step * i, y0 + step * j, v0);
 			p1.Set(x0 + step * (i + 1), y0 + step * j, v1);
 			p2.Set(x0 + step * i, y0 + step * (j + 1), v2);
@@ -438,8 +410,8 @@ void ChartClass::drawValueBar(wxDC * dc)
 	dc->DrawLine(_w - 51, 39, _w - 41, 39);
 	dc->DrawLine(_w - 51, _h - 40, _w - 41, _h - 40);
 	
-	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_z_max()), _w - 125, 30);
-	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_z_min()), _w - 125, _h - 50);
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_max()), _w - 125, 30);
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_min()), _w - 125, _h - 50);
 	
 	wxMemoryDC memDC;
 	memDC.SelectObject(bitmap);
