@@ -110,36 +110,6 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 
 	bSizer7->Add( bSizer7121, 1, wxEXPAND, 5 );
 
-	wxBoxSizer* bSizer10;
-	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
-
-	bSizer10->SetMinSize( wxSize( 100,30 ) );
-	m_staticText39 = new wxStaticText( this, wxID_ANY, wxT("f_min:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText39->Wrap( -1 );
-	bSizer10->Add( m_staticText39, 3, wxALL, 5 );
-
-	f_min_txt = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	f_min_txt->Wrap( -1 );
-	bSizer10->Add( f_min_txt, 0, wxALL, 5 );
-
-
-	bSizer7->Add( bSizer10, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_LEFT|wxALL, 5 );
-
-	wxBoxSizer* bSizer101;
-	bSizer101 = new wxBoxSizer( wxHORIZONTAL );
-
-	bSizer101->SetMinSize( wxSize( 100,30 ) );
-	m_staticText41 = new wxStaticText( this, wxID_ANY, wxT("f_max:"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	m_staticText41->Wrap( -1 );
-	bSizer101->Add( m_staticText41, 3, wxALL, 5 );
-
-	f_max_txt = new wxStaticText( this, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( -1,20 ), 0 );
-	f_max_txt->Wrap( -1 );
-	bSizer101->Add( f_max_txt, 0, wxALL, 5 );
-
-
-	bSizer7->Add( bSizer101, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_LEFT|wxALL, 5 );
-
 	draw_button = new wxButton( this, wxID_ANY, wxT("Rysuj"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer7->Add( draw_button, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
 
@@ -149,12 +119,19 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxWrapSizer* wSizer1;
 	wSizer1 = new wxWrapSizer( wxHORIZONTAL, wxWRAPSIZER_DEFAULT_FLAGS );
 
-	step_staticText = new wxStaticText( this, wxID_ANY, wxT("krok:"), wxDefaultPosition, wxDefaultSize, 0 );
-	step_staticText->Wrap( -1 );
-	wSizer1->Add( step_staticText, 0, wxALIGN_CENTER|wxALL, 5 );
+	x_step_staticText = new wxStaticText( this, wxID_ANY, wxT("krok_x:"), wxDefaultPosition, wxDefaultSize, 0 );
+	x_step_staticText->Wrap( -1 );
+	wSizer1->Add( x_step_staticText, 0, wxALIGN_CENTER|wxALL, 5 );
 
-	step_spinCtrl = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,30 ), wxSP_ARROW_KEYS, 0, 999, 10 );
-	wSizer1->Add( step_spinCtrl, 0, wxALIGN_CENTER|wxALL, 5 );
+	x_step_spinCtrl = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,30 ), wxSP_ARROW_KEYS, 1, 999, 10 );
+	wSizer1->Add( x_step_spinCtrl, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	y_step_staticText = new wxStaticText( this, wxID_ANY, wxT("krok_y:"), wxDefaultPosition, wxDefaultSize, 0 );
+	y_step_staticText->Wrap( -1 );
+	wSizer1->Add( y_step_staticText, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	y_step_spinCtrl = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,30 ), wxSP_ARROW_KEYS, 1, 999, 10 );
+	wSizer1->Add( y_step_spinCtrl, 0, wxALL, 5 );
 
 
 	bSizer7->Add( wSizer1, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5 );
@@ -260,7 +237,8 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	z1_SpinCtrlDouble->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::z1_update ), NULL, this );
 	draw_button->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	contour_checkBox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( MyFrame::contour_checkBoxOnCheckBox ), NULL, this );
-	step_spinCtrl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::step_update ), NULL, this );
+	x_step_spinCtrl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x_step_update ), NULL, this );
+	y_step_spinCtrl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y_step_update ), NULL, this );
 	zoom_slider->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
 	zoom_slider->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
 	zoom_slider->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
@@ -315,7 +293,8 @@ MyFrame::~MyFrame()
 	z1_SpinCtrlDouble->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::z1_update ), NULL, this );
 	draw_button->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	contour_checkBox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( MyFrame::contour_checkBoxOnCheckBox ), NULL, this );
-	step_spinCtrl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::step_update ), NULL, this );
+	x_step_spinCtrl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x_step_update ), NULL, this );
+	y_step_spinCtrl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y_step_update ), NULL, this );
 	zoom_slider->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
 	zoom_slider->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
 	zoom_slider->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );

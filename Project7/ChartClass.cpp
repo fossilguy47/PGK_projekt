@@ -345,55 +345,26 @@ void ChartClass::drawContourMap(wxDC *dc)
 	}
 
 	memDC.SetPen(*wxBLACK_PEN);
-	
-	// kratka zaprogramowana na liczbę kroków
-	/*
-	int num_of_steps = 10;
-	int w_step = static_cast<int>(plot_w / num_of_steps);
-	int h_step = static_cast<int>(plot_h / num_of_steps);
-
-	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / num_of_steps;
-	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / num_of_steps;*/
-
-
-	// kratka oraz wartości 
-	//for (int i = 0; i < plot_w; i+=w_step)  memDC.DrawLine(i, 0, i, plot_h);
-	//for (int i = 0; i < plot_h; i +=w_step)  memDC.DrawLine(0, i, plot_w, i);
-	/*dc->SetFont(*wxSMALL_FONT);
-	dc->SetPen(*wxBLACK_PEN);
-	for (int i = 0; i <= plot_w; i += w_step)
-	{
-		dc->DrawText(wxString::Format("%.2f", cfg->Get_x0() + (i/w_step)*x_step), 100 + i, 40 + plot_h);
-		dc->DrawLine(100 + i, 20 + plot_h, 100 + i, 30 + plot_h);
-		//memDC.DrawLine(i, plot_h - 10, i, plot_h); // krótka kreska
-		memDC.DrawLine(i, 0, i, plot_h);
-	}
-	for (int i = 0; i <= plot_h; i += h_step)
-	{
-		dc->DrawText(wxString::Format("%.2f", cfg->Get_y1() - (i / h_step) *y_step), 50, 13 + i);
-		dc->DrawLine(89, 20 + i, 99, 20 + i);
-		//memDC.DrawLine(0, i, 10, i); / krótka kreska
-		memDC.DrawLine(0, i, plot_w, i);
-	}*/
 
 	// kratka zaprogramowana na wartość pojedynczego kroku
 
-	int step = cfg->Get_step();
-	int w_step = static_cast<int>(plot_w*step / (cfg->Get_x1()- cfg->Get_x0()));
-	int h_step = static_cast<int>(plot_h*step / (cfg->Get_y1() - cfg->Get_y0()));
+	int x_step = cfg->Get_x_step();
+	int y_step = cfg->Get_y_step();
+	int w_step = static_cast<int>(plot_w*x_step / (cfg->Get_x1()- cfg->Get_x0()));
+	int h_step = static_cast<int>(plot_h*y_step / (cfg->Get_y1() - cfg->Get_y0()));
 
 	dc->SetFont(*wxSMALL_FONT);
 	dc->SetPen(*wxBLACK_PEN);
 	for (int i = 0; i <= plot_w; i += w_step)
 	{
-		dc->DrawText(wxString::Format("%10.2f", cfg->Get_x0() + (i / w_step) * step), 70 + i, 40 + plot_h);
+		dc->DrawText(wxString::Format("%10.2f", cfg->Get_x0() + (i / w_step) * x_step), 70 + i, 40 + plot_h);
 		dc->DrawLine(100 + i, 20 + plot_h, 100 + i, 30 + plot_h);
 		//memDC.DrawLine(i, plot_h - 10, i, plot_h); // krótka kreska
 		memDC.DrawLine(i, 0, i, plot_h);
 	}
 	for (int i = 0; i <= plot_h; i += h_step)
 	{
-		dc->DrawText(wxString::Format("%10.2f", cfg->Get_y0() + (i / h_step) * step), 30, plot_h+13-i);
+		dc->DrawText(wxString::Format("%10.2f", cfg->Get_y0() + (i / h_step) * y_step), 30, plot_h+13-i);
 		dc->DrawLine(89, plot_h+20-i, 99, plot_h+20-i);
 		//memDC.DrawLine(0, i, 10, i); / krótka kreska
 		memDC.DrawLine(0, plot_h-i, plot_w, plot_h-i);

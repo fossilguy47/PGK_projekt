@@ -36,7 +36,8 @@ class GUIMyFrame : public MyFrame
 		void z1_update( wxCommandEvent& event );
 		void draw_buttonOnButtonClick( wxCommandEvent& event );
 		void contour_checkBoxOnCheckBox( wxCommandEvent& event );
-		void step_update( wxCommandEvent& event );
+		void x_step_update( wxCommandEvent& event );
+		void y_step_update( wxCommandEvent& event );
 		void zoom_sliderOnScroll( wxScrollEvent& event );
 		void x_sliderOnScroll( wxScrollEvent& event );
 		void y_sliderOnScroll( wxScrollEvent& event );
@@ -50,6 +51,12 @@ class GUIMyFrame : public MyFrame
 		~GUIMyFrame() {};
 		std::shared_ptr<ConfigClass> cfg;
 		void Repaint();
+
+
+
+
+
+
 
 
 

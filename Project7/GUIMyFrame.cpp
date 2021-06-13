@@ -10,8 +10,6 @@ MyFrame( parent )
 	m_staticText1->SetLabel(_(L"Wyb\u00F3r funkcji oraz parametr\u00F3w"));
 	load_button->SetLabel(_(L"Za\u0142aduj"));
 	cfg = std::make_shared<ConfigClass>(this);
-	f_min_txt->SetLabel(wxString::Format(wxT("%2.2lf"), ChartClass(cfg).Get_z_min()));
-	f_max_txt->SetLabel(wxString::Format(wxT("%2.2lf"), ChartClass(cfg).Get_z_max()));
 }
 
 void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
@@ -133,9 +131,14 @@ z_slider->Enable();
 Repaint();
 }
 
-void GUIMyFrame::step_update( wxCommandEvent& event )
+void GUIMyFrame::x_step_update( wxCommandEvent& event )
 {
-	cfg->Set_step(step_spinCtrl->GetValue());
+	cfg->Set_x_step(x_step_spinCtrl->GetValue());
+}
+
+void GUIMyFrame::y_step_update( wxCommandEvent& event )
+{
+	cfg->Set_y_step(y_step_spinCtrl->GetValue());
 }
 
 void GUIMyFrame::zoom_sliderOnScroll( wxScrollEvent& event )
@@ -198,7 +201,5 @@ void GUIMyFrame::Repaint()
 	wxBufferedDC dc_buffered(&dc_client);
 	ChartClass MyChart(cfg, w, h);
 	MyChart.Draw(&dc_buffered);
-	f_min_txt->SetLabel(wxString::Format(wxT("%2.2lf"), MyChart.Get_z_min()));
-	f_max_txt->SetLabel(wxString::Format(wxT("%2.2lf"), MyChart.Get_z_max()));
 	MyChart.drawValueBar(&dc_buffered);
 }

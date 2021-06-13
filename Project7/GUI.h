@@ -54,14 +54,12 @@ class MyFrame : public wxFrame
 		wxSpinCtrlDouble* y1_SpinCtrlDouble;
 		wxStaticText* m_staticText91;
 		wxSpinCtrlDouble* z1_SpinCtrlDouble;
-		wxStaticText* m_staticText39;
-		wxStaticText* f_min_txt;
-		wxStaticText* m_staticText41;
-		wxStaticText* f_max_txt;
 		wxButton* draw_button;
 		wxCheckBox* contour_checkBox;
-		wxStaticText* step_staticText;
-		wxSpinCtrl* step_spinCtrl;
+		wxStaticText* x_step_staticText;
+		wxSpinCtrl* x_step_spinCtrl;
+		wxStaticText* y_step_staticText;
+		wxSpinCtrl* y_step_spinCtrl;
 		wxStaticText* m_staticText2313;
 		wxSlider* zoom_slider;
 		wxStaticText* m_staticText25;
@@ -86,7 +84,8 @@ class MyFrame : public wxFrame
 		virtual void z1_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void contour_checkBoxOnCheckBox( wxCommandEvent& event ) { event.Skip(); }
-		virtual void step_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void x_step_update( wxCommandEvent& event ) { event.Skip(); }
+		virtual void y_step_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void zoom_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
 		virtual void x_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
 		virtual void y_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
