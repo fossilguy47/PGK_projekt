@@ -161,27 +161,28 @@ void GUIMyFrame::z_sliderOnScroll( wxScrollEvent& event )
 	cfg->Set_z_rot(z_slider->GetValue());
 }
 
-void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event )
-{
-::wxInitAllImageHandlers();
-wxClientDC* my_wxclientdc = new wxClientDC(drawing_panel);
-wxMemoryDC* my_wxmemorydc = new wxMemoryDC();
-wxBitmap my_bitmap_tmp(drawing_panel->GetSize(), wxBITMAP_SCREEN_DEPTH);
-my_wxmemorydc->SelectObject(my_bitmap_tmp);
-my_wxmemorydc->Blit(wxPoint(0, 0), drawing_panel->GetSize(), my_wxclientdc, wxPoint(-1, -1), wxCOPY, true, wxDefaultPosition);
-wxFileDialog* FileDialog2;
-FileDialog2 = new wxFileDialog(this, _("Select file"), wxEmptyString, wxEmptyString, _(".bmp|*.bmp|.jpeg|*.jpeg|.png|*.png"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition, wxDefaultSize, _T("wxFileDialog"));
-int dlg = FileDialog2->ShowModal();
-if (dlg == wxID_OK)
-{
-wxFileName my_file(FileDialog2->GetPath());
-wxString my_file_ext = my_file.GetExt().Lower();
+void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event ){
+	::wxInitAllImageHandlers();
+	wxClientDC* my_wxclientdc = new wxClientDC(drawing_panel);
+	wxMemoryDC* my_wxmemorydc = new wxMemoryDC();
+	wxBitmap my_bitmap_tmp(drawing_panel->GetSize(), wxBITMAP_SCREEN_DEPTH);
+	my_wxmemorydc->SelectObject(my_bitmap_tmp);
+	my_wxmemorydc->Blit(wxPoint(0, 0), drawing_panel->GetSize(), my_wxclientdc, wxPoint(-1, -1), wxCOPY, true, wxDefaultPosition);
+	wxFileDialog* FileDialog2;
+	FileDialog2 = new wxFileDialog(this, _("Select file"), wxEmptyString, wxEmptyString, _(".bmp|*.bmp|.jpeg|*.jpeg|.png|*.png"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition, wxDefaultSize, _T("wxFileDialog"));
+	int dlg = FileDialog2->ShowModal();
+	if (dlg == wxID_OK){
+		wxFileName my_file(FileDialog2->GetPath());
+		wxString my_file_ext = my_file.GetExt().Lower();
 
-if (my_file_ext == wxT("png"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_PNG, NULL);
-else if (my_file_ext == wxT("jpeg"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_JPEG, NULL);
-else if (my_file_ext == wxT("bmp"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_BMP, NULL);
+		if (my_file_ext == wxT("png"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_PNG, NULL);
+		else if (my_file_ext == wxT("jpeg"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_JPEG, NULL);
+		else if (my_file_ext == wxT("bmp"))my_bitmap_tmp.SaveFile(FileDialog2->GetPath(), wxBITMAP_TYPE_BMP, NULL);
 
-}
+	}
+	delete my_wxclientdc;
+	delete my_wxmemorydc;
+	delete FileDialog2;
 }
 
 void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
