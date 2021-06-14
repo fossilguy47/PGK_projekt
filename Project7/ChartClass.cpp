@@ -5,14 +5,11 @@
 
 #define PI 3.14159
 
-void ChartClass::addSegment(Segment s) {
-	data.push_back(s);
-}
-
-ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h) : _w(w), _h(h) 
+ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h, std::vector<Segment> data) : _w(w), _h(h) 
 {
 	cfg = std::move(c);
 	initializeValueGrid();
+	loaded_data = data;
 }
 
 Matrix createRotationMatrix(double Rx, double Ry, double Rz) {
@@ -339,9 +336,7 @@ void ChartClass::drawChart(wxDC* dc)
 	double y1 = cfg->Get_y1();
 	double z_range = f_max - f_min;
 	int i, j;
-	
 	if (!cfg->Get_loaded()) {
-
 		for (i = 0; i < (x1 - x0) / step; i++)
 		{
 			for (j = 0; j < (y1 - y0) / step; j++)
@@ -360,15 +355,19 @@ void ChartClass::drawChart(wxDC* dc)
 				drawLine(dc, p0, p2);
 			}
 		}
+
 		int i_max = i;
 		int j_max = j;
 		//Dorysowanie skrajnych linii na wykresie
 		for (i = 0; i < (x1 - x0) / step; i++)
 		{
 			Vector p0, p1;
+			double v0 = getFunctionValue(x0 + step * i, y0 + step * j_max);
+			double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j_max);
 			//Ustawienie punktu początkowego i koncowego odcinka
-			p0.Set(x0 + step * i, y0 + step * j_max, getFunctionValue(x0 + step * i, y0 + step * j_max));
-			p1.Set(x0 + step * (i + 1), y0 + step * j_max, getFunctionValue(x0 + step * (i + 1), y0 + step * j_max));
+			dc->SetPen(wxPen(RGB(255 * (v0 - f_min) / z_range, 0, 255 - 255 * (v0 - f_min) / z_range)));
+			p0.Set(x0 + step * i, y0 + step * j_max, v0);
+			p1.Set(x0 + step * (i + 1), y0 + step * j_max, v1);
 			//Rysowanie połączenia w prawym i dolnym punktem
 			drawLine(dc, p0, p1);
 		}
@@ -383,7 +382,18 @@ void ChartClass::drawChart(wxDC* dc)
 		}
 	}
 	else {
-		dc->DrawText("COKOLWIEK", cfg->a, cfg->b);
+		double v_max=loaded_data[0].begin.mZ, v_min = loaded_data[0].begin.mZ;
+		for (auto seg : loaded_data) {
+			v_max = v_max < seg.begin.mZ ? seg.begin.mZ : v_max;
+			v_min = v_min > seg.begin.mZ ? seg.begin.mZ : v_min;
+		}		
+		Vector p0, p1;
+		for (auto seg : loaded_data) {
+			p0.Set(seg.begin.mX, seg.begin.mY, seg.begin.mZ);
+			p1.Set(seg.end.mX, seg.end.mY, seg.end.mZ);
+			dc->SetPen(wxPen(RGB(255 * (p1.GetZ() - v_min) / (v_max - v_min), 0, 255 - 255 * (p1.GetZ() - v_min) / (v_max - v_min))));
+			drawLine(dc, p0, p1);
+		}
 	}
 }
 

@@ -5,8 +5,6 @@
 #include <fstream>
 #include <vector>
 
-std::vector<Segment> data;
-
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
@@ -24,6 +22,7 @@ void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
 void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 {
 	cfg->Set_f_type(function_choice->GetSelection());
+	cfg->Set_loaded(false);
 }
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
@@ -37,10 +36,11 @@ void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 		std::ifstream in(WxOpenFileDialog.GetPath().ToAscii());
 		if (in.is_open())
 		{
+			data.clear();
 			while (!in.eof())
 			{
-				in >> x1 >> x2;// x1 >> y1 >> z1 >> x2 >> y2 >> z2;
-				Segment(x1, x2);
+				in >> x1 >> y1 >> z1 >> x2 >> y2 >> z2;
+				data.push_back(Segment(Point(x1, y1, z1), Point(x2, y2, z2)));	
 			}
 			in.close();
 			cfg->Set_loaded(true);
@@ -221,7 +221,7 @@ void GUIMyFrame::Repaint()
 	drawing_panel->GetSize(&w, &h);
 	wxClientDC dc_client(drawing_panel);
 	wxBufferedDC dc_buffered(&dc_client);
-	ChartClass MyChart(cfg, w, h);
+	ChartClass MyChart(cfg, w, h, data);
 	MyChart.Draw(&dc_buffered);
 	MyChart.drawValueBar(&dc_buffered);
 }

@@ -8,6 +8,7 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
 {
     MainWindow = wnd;
     is_contour = false;
+    loaded = false;
     x_start = -50.0;
     x_stop = 50.0;
     y_start = -50.0;
@@ -25,6 +26,7 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
     z_rot = 38;
     x_step = 10;
     y_step = 10;
+   
 }
 
 

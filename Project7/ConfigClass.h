@@ -7,7 +7,8 @@ class ConfigClass
 {
 private:
     GUIMyFrame* MainWindow;
-    bool is_contour = false;
+    bool is_contour;
+    bool loaded;
     double x0, y0, x1, y1, z0, z1;
     double x_start, x_stop;
     double y_start, y_stop;
@@ -15,8 +16,6 @@ private:
     int zoom;
     int x_rot, y_rot, z_rot;
     int x_step, y_step;
-    bool loaded = false;
-
 public:
     double a;
     double b;
