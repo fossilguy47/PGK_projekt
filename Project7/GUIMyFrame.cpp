@@ -3,7 +3,6 @@
 #include "ChartClass.h"
 #include "Printout.h"
 
-
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
@@ -20,8 +19,8 @@ void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
 
 void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 {
-	cfg->Set_f_type(function_choice->GetSelection());
-	cfg->Set_loaded(false);
+cfg->Set_f_type(function_choice->GetSelection());
+cfg->Set_loaded(false);
 }
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
@@ -39,7 +38,7 @@ void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 			while (!in.eof())
 			{
 				in >> x1 >> y1 >> z1 >> x2 >> y2 >> z2;
-				data.push_back(Segment(Point(x1, y1, z1), Point(x2, y2, z2)));	
+				data.push_back(Segment(Point(x1, y1, z1), Point(x2, y2, z2)));
 			}
 			in.close();
 			cfg->Set_loaded(true);
@@ -49,106 +48,110 @@ void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 
 void GUIMyFrame::x0_update( wxCommandEvent& event )
 {
-if (x0_SpinCtrlDouble->GetValue() < x1_SpinCtrlDouble->GetValue())
-{
-cfg->Set_x0(x0_SpinCtrlDouble->GetValue());
-}
-else
-{
-x0_SpinCtrlDouble->SetValue(cfg->Get_x0());
-wxBell();
-}
+	if (x0_SpinCtrlDouble->GetValue() < x1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_x0(x0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		x0_SpinCtrlDouble->SetValue(cfg->Get_x0());
+		wxBell();
+	}
 }
 
 void GUIMyFrame::y0_update( wxCommandEvent& event )
 {
-if (y0_SpinCtrlDouble->GetValue() < y1_SpinCtrlDouble->GetValue())
-{
-cfg->Set_y0(y0_SpinCtrlDouble->GetValue());
-}
-else
-{
-y0_SpinCtrlDouble->SetValue(cfg->Get_y0());
-wxBell();
-}
+	if (y0_SpinCtrlDouble->GetValue() < y1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_y0(y0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		y0_SpinCtrlDouble->SetValue(cfg->Get_y0());
+		wxBell();
+	}
 }
 
 void GUIMyFrame::z0_update( wxCommandEvent& event )
 {
-if (z0_SpinCtrlDouble->GetValue() < z1_SpinCtrlDouble->GetValue())
-{
-cfg->Set_z0(z0_SpinCtrlDouble->GetValue());
-}
-else
-{
-z0_SpinCtrlDouble->SetValue(cfg->Get_z0());
-wxBell();
-}
+	if (z0_SpinCtrlDouble->GetValue() < z1_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_z0(z0_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		z0_SpinCtrlDouble->SetValue(cfg->Get_z0());
+		wxBell();
+	}
 }
 
 void GUIMyFrame::x1_update( wxCommandEvent& event )
 {
-if (x1_SpinCtrlDouble->GetValue() > x0_SpinCtrlDouble->GetValue())
-{
-cfg->Set_x1(x1_SpinCtrlDouble->GetValue());
-}
-else
-{
-x1_SpinCtrlDouble->SetValue(cfg->Get_x1());
-wxBell();
-}
+	if (x1_SpinCtrlDouble->GetValue() > x0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_x1(x1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		x1_SpinCtrlDouble->SetValue(cfg->Get_x1());
+		wxBell();
+	}
 }
 
 void GUIMyFrame::y1_update( wxCommandEvent& event )
 {
-if (y1_SpinCtrlDouble->GetValue() > y0_SpinCtrlDouble->GetValue())
-{
-cfg->Set_y1(y1_SpinCtrlDouble->GetValue());
-}
-else
-{
-y1_SpinCtrlDouble->SetValue(cfg->Get_y1());
-wxBell();
-}
+	if (y1_SpinCtrlDouble->GetValue() > y0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_y1(y1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		y1_SpinCtrlDouble->SetValue(cfg->Get_y1());
+		wxBell();
+	}
 }
 
 void GUIMyFrame::z1_update( wxCommandEvent& event )
 {
-if (z1_SpinCtrlDouble->GetValue() > z0_SpinCtrlDouble->GetValue())
-{
-cfg->Set_z1(z1_SpinCtrlDouble->GetValue());
+	if (z1_SpinCtrlDouble->GetValue() > z0_SpinCtrlDouble->GetValue())
+	{
+		cfg->Set_z1(z1_SpinCtrlDouble->GetValue());
+	}
+	else
+	{
+		z1_SpinCtrlDouble->SetValue(cfg->Get_z1());
+		wxBell();
+	}
 }
-else
+
+void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
 {
-z1_SpinCtrlDouble->SetValue(cfg->Get_z1());
-wxBell();
-}
+	if (contour_checkBox->IsChecked())
+	{
+		cfg->Set_contour(true);
+		zoom_slider->Disable();
+		x_slider->Disable();
+		y_slider->Disable();
+		z_slider->Disable();
+		x_step_spinCtrl->Enable();
+		y_step_spinCtrl->Enable();
+	}
+	else
+	{
+		cfg->Set_contour(false);
+		zoom_slider->Enable();
+		x_slider->Enable();
+		y_slider->Enable();
+		z_slider->Enable();
+		x_step_spinCtrl->Disable();
+		y_step_spinCtrl->Disable();
+	}
+	Repaint();
 }
 
 void GUIMyFrame::draw_buttonOnButtonClick( wxCommandEvent& event )
 {
 	Repaint();
-}
-
-void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
-{
-if (contour_checkBox->IsChecked())
-{
-cfg->Set_contour(true);
-zoom_slider->Disable();
-x_slider->Disable();
-y_slider->Disable();
-z_slider->Disable();
-}
-else
-{
-cfg->Set_contour(false);
-zoom_slider->Enable();
-x_slider->Enable();
-y_slider->Enable();
-z_slider->Enable();
-}
-Repaint();
 }
 
 void GUIMyFrame::x_step_update( wxCommandEvent& event )
@@ -181,7 +184,8 @@ void GUIMyFrame::z_sliderOnScroll( wxScrollEvent& event )
 	cfg->Set_z_rot(z_slider->GetValue());
 }
 
-void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event ){
+void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event )
+{
 	::wxInitAllImageHandlers();
 	wxClientDC* my_wxclientdc = new wxClientDC(drawing_panel);
 	wxMemoryDC* my_wxmemorydc = new wxMemoryDC();
@@ -191,7 +195,8 @@ void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event ){
 	wxFileDialog* FileDialog2;
 	FileDialog2 = new wxFileDialog(this, _("Select file"), wxEmptyString, wxEmptyString, _(".bmp|*.bmp|.jpeg|*.jpeg|.png|*.png"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition, wxDefaultSize, _T("wxFileDialog"));
 	int dlg = FileDialog2->ShowModal();
-	if (dlg == wxID_OK){
+	if (dlg == wxID_OK)
+	{
 		wxFileName my_file(FileDialog2->GetPath());
 		wxString my_file_ext = my_file.GetExt().Lower();
 
@@ -207,10 +212,9 @@ void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event ){
 
 void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
 {
-
-wxPrinter Printer;
-Printout MyPrintout;
-Printer.Print(this, &MyPrintout, true);
+	wxPrinter Printer;
+	Printout MyPrintout;
+	Printer.Print(this, &MyPrintout, true);
 }
 
 

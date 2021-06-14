@@ -144,7 +144,7 @@ double ChartClass::getFunctionValue(double x, double y)
 	switch (cfg->Get_f_type())
 	{
 	case 1:
-		return (x * x + y * y) / 50;
+		return 50 * sin((x * x + y * y) / 500);
 		break;
 	case 2:
 		return (sign(-65 - x) + sign(-35 - x) + sign(-5 - x) + sign(25 - x) + sign(55 - x)) * 10;
@@ -156,7 +156,7 @@ double ChartClass::getFunctionValue(double x, double y)
 		return (x*y) / exp(pow(0.05 * x, 2) * pow(0.05 * y, 2))/3;
 		break;
 	default:
-		return 50*sin((x * x + y * y)/500);
+		return (x * x + y * y) / 50;
 	}
 }
 
@@ -308,12 +308,12 @@ void ChartClass::initializeValueGrid()
 	}
 	else
 	{
+		x0 = cfg->Get_x0();
+		x1 = cfg->Get_x1();
+		y0 = cfg->Get_y0();
+		y1 = cfg->Get_y1();
 		f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
 	}
-	x0 = cfg->Get_x0();
-	x1 = cfg->Get_x1();
-	y0 = cfg->Get_y0();
-	y1 = cfg->Get_y1();
 
 	if (x1 - x0 > y1 - y0)
 	{
@@ -332,8 +332,8 @@ void ChartClass::initializeValueGrid()
 		plot_w = 500;
 		plot_h = 500;
 	}
-	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
-	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+	double x_step = (x1 - x0) / (plot_w - 1.0);
+	double y_step = (y1 - y0) / (plot_h - 1.0);
 	for (int i = 0; i < plot_h; i++)
 	{
 		for (int j = 0; j < plot_w; j++)
@@ -341,20 +341,6 @@ void ChartClass::initializeValueGrid()
 			float value = cfg->Get_loaded() ? shepard(loaded_data, x0 + j * x_step, y1 - i * y_step, a, b)
 											: getFunctionValue(x0 + j * x_step, y1 - i * y_step);
 				
-			/* progowanie wartości (na razie okomentowane, by wychodziły wartości
-			f_min i fmax nieograniczone przez z0 i z1)*/
-			/*if (value > cfg->Get_z1())
-			{
-				valueGrid.push_back(cfg->Get_z1());
-			}
-			else if (value < cfg->Get_z0())
-			{
-				valueGrid.push_back(cfg->Get_z0());
-			}
-			else
-			{
-				valueGrid.push_back(value);
-			}*/
 			valueGrid.push_back(value);
 			if (!cfg->Get_loaded())
 			{
@@ -402,25 +388,6 @@ void ChartClass::drawContourMap(wxDC *dc)
 
 	const wxBitmap colorMap(image, 24);
 	memDC.DrawBitmap(colorMap, 0, 0);
-
-	// kontury (póki co ustawione na 5 poziomic)
-	/*dc->SetPen(wxPen(RGB(0, 0, 0)));
-	int NoLevels = 5;
-	for (int i = 0; i < NoLevels; i++)
-	{
-		float threshold = f_min + (i + 1.0) * (f_max - f_min) / (NoLevels + 1.0);
-
-		for (int x = 0; x < plot_w; x++)
-			for (int y = 0; y < plot_h; y++)
-				if (valueGrid[plot_w * y + x] > threshold)
-				{
-					for (int a = -1; a <= 1; a++)
-						for (int b = -1; b <= 1; b++)
-							if (a && b && (a + y >= 0) && (b + x >= 0) && (a + y < plot_h) && (b + x < plot_w) &&
-								(valueGrid[plot_w * (a + y) + b + x] < threshold))
-								memDC.DrawPoint(x, y);
-				}
-	}*/
 
 	memDC.SetPen(*wxBLACK_PEN);
 
@@ -563,6 +530,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 
 	dc->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
+	// wyświetlanie wzoru funkcji
 	if (cfg->Get_loaded())
 	{
 		dc->DrawText("Funkcja załadowana z pliku", 30, _h - 30);
@@ -573,7 +541,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 		switch (cfg->Get_f_type())
 		{
 		case 1:
-			str = "f(x,y) = (x^2 + y^2)/50";
+			str = "f(x,y) = 50sin((x^2 + y^2)/500)";
 			break;
 		case 2:
 			str = "f(x,y) = 10(sgn(-65 - x) + sgn(-35 - x) + sgn(-5 - x) + sgn(25 - x) + sgn(55 - x))";
@@ -585,7 +553,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 			str = "f(x,y) = 1/3 * xy/e^((0.05x)^2 * (0.05y)^2)";
 			break;
 		default:
-			str = "f(x,y) = 50sin((x^2 + y^2)/500)";
+			str = "f(x,y) = (x^2 + y^2)/50";
 		}
 		dc->DrawText(str, 30, _h - 30);
 	}
