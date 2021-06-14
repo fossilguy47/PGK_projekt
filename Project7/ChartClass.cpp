@@ -5,17 +5,29 @@
 
 #define PI 3.14159
 
-float shepard(std::vector<Segment> &data, float x, float y, Point &p_min, Point &p_max)
+double shepard(std::vector<Segment> &data, double x, double y, Point &p_min, Point &p_max)
 {
-	float a = 0;
-	float b = 0;
+	double a = 0;
+	double b = 0;
+
+	// punkty, w których znajduje się wartość minimalna (p_min) i maksymalna (p_max) funkcji
+	double w_b = (x - p_min.mX) * (x - p_min.mX) + (y - p_min.mY) * (y - p_min.mY);
+	double w = 1.f / w_b;
+	b += w;
+	a += w * p_min.mZ;
+
+	w_b = (x - p_max.mX) * (x - p_max.mX) + (y - p_max.mY) * (y - p_max.mY);
+	w = 1.f / w_b;
+	b += w;
+	a += w * p_max.mZ;
+
 	// wybieramy 100 segmentów (dzielnik), może też być np. 20 lub 30 żeby szybciej działało, ale 
 	// wtedy mapa konturowa gorzej wygląda
 	unsigned step = data.size() / 100 > 0 ? data.size() / 100 : 1;
 	for (unsigned i = 0; i < data.size(); i += step)
 	{
-		float w_b = (x - data[i].begin.mX) * (x - data[i].begin.mX) + (y - data[i].begin.mY) * (y - data[i].begin.mY);
-		float w = 1.f / w_b;
+		w_b = (x - data[i].begin.mX) * (x - data[i].begin.mX) + (y - data[i].begin.mY) * (y - data[i].begin.mY);
+		w = 1.f / w_b;
 
 		b += w;
 		a += w * data[i].begin.mZ;
@@ -27,17 +39,6 @@ float shepard(std::vector<Segment> &data, float x, float y, Point &p_min, Point 
 		a += w * data[i].end.mZ;
 	}
 	
-	// punkty, w których znajduje się wartość minimalna (p_min) i maksymalna (p_max) funkcji
-	float w_b = (x - p_min.mX) * (x - p_min.mX) + (y - p_min.mY) * (y - p_min.mY);
-	float w = 1.f / w_b;
-	b += w;
-	a += w * p_min.mZ;
-	
-	w_b = (x - p_max.mX) * (x - p_max.mX) + (y - p_max.mY) * (y - p_max.mY);
-	w = 1.f / w_b;
-	b += w;
-	a += w * p_max.mZ;
-
 	return a / b;
 }
 
@@ -230,16 +231,18 @@ void ChartClass::drawAxes(wxDC* dc) {
 void ChartClass::initializeValueGrid()
 {
 	valueGrid.clear();
-	if (cfg->Get_loaded()) 
+	double x0, x1, y0, y1;
+	Point a, b;
+	a = b = Point(0,0,0);
+	if (cfg->Get_loaded())
 	{
-		double x0 = 1000.0;
-		double x1 = -1000.0;
-		double y0 = 1000.0;
-		double y1 = -1000.0;
+		x0 = 1000.0;
+		x1 = -1000.0;
+		y0 = 1000.0;
+		y1 = -1000.0;
 		f_min = loaded_data[0].begin.mZ;
 		f_max = loaded_data[0].begin.mZ;
-		
-		Point a, b;
+
 
 		for (int i = 0; i < loaded_data.size(); i++)
 		{
@@ -279,96 +282,59 @@ void ChartClass::initializeValueGrid()
 				b = loaded_data[i].end;
 			}
 		}
-		
-		if (x1 - x0 > y1 - y0)
-		{
-			plot_w = 500;
-			plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
-		}
-		// kiedy szerokość > długość
-		else if (x1 - x0 < y1 - y0)
-		{
-			plot_h = 500;
-			plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
-		}
-		// kiedy długość == szerokość
-		else
-		{
-			plot_w = 500;
-			plot_h = 500;
-		}
-		double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
-		double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
-		for (int i = 0; i < plot_h; i++)
-		{
-			for (int j = 0; j < plot_w; j++)
-			{
-				float value = shepard(loaded_data, x0 + j*x_step, y1 - i*y_step, a, b);
-				/* progowanie wartości (na razie okomentowane, by wychodziły wartości
-					f_min i fmax nieograniczone przez z0 i z1)*/
-					/*if (value > cfg->Get_z1())
-					{
-						valueGrid.push_back(cfg->Get_z1());
-					}
-					else if (value < cfg->Get_z0())
-					{
-						valueGrid.push_back(cfg->Get_z0());
-					}
-					else
-					{
-						valueGrid.push_back(value);
-					}*/
-				valueGrid.push_back(value);
-			}
-		}
 	}
-	
-	else 
+	else
 	{
-		double x0 = cfg->Get_x0();
-		double x1 = cfg->Get_x1();
-		double y0 = cfg->Get_y0();
-		double y1 = cfg->Get_y1();
-		if (x1 - x0 > y1 - y0)
-		{
-			plot_w = 500;
-			plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
-		}
-		// kiedy szerokość > długość
-		else if (x1 - x0 < y1 - y0)
-		{
-			plot_h = 500;
-			plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
-		}
-		// kiedy długość == szerokość
-		else
-		{
-			plot_w = 500;
-			plot_h = 500;
-		}
-		double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
-		double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
 		f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
-		for (int i = 0; i < plot_h; i++)
+	}
+	x0 = cfg->Get_x0();
+	x1 = cfg->Get_x1();
+	y0 = cfg->Get_y0();
+	y1 = cfg->Get_y1();
+
+	if (x1 - x0 > y1 - y0)
+	{
+		plot_w = 500;
+		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
+	}
+	// kiedy szerokość > długość
+	else if (x1 - x0 < y1 - y0)
+	{
+		plot_h = 500;
+		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
+	}
+	// kiedy długość == szerokość
+	else
+	{
+		plot_w = 500;
+		plot_h = 500;
+	}
+	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
+	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+	for (int i = 0; i < plot_h; i++)
+	{
+		for (int j = 0; j < plot_w; j++)
 		{
-			for (int j = 0; j < plot_w; j++)
+			float value = cfg->Get_loaded() ? shepard(loaded_data, x0 + j * x_step, y1 - i * y_step, a, b)
+											: getFunctionValue(x0 + j * x_step, y1 - i * y_step);
+				
+			/* progowanie wartości (na razie okomentowane, by wychodziły wartości
+			f_min i fmax nieograniczone przez z0 i z1)*/
+			/*if (value > cfg->Get_z1())
 			{
-				float value = getFunctionValue(cfg->Get_x0() + j * x_step, cfg->Get_y1() - i * y_step);
-				/* progowanie wartości (na razie okomentowane, by wychodziły wartości
-					f_min i fmax nieograniczone przez z0 i z1)*/
-					/*if (value > cfg->Get_z1())
-					{
-						valueGrid.push_back(cfg->Get_z1());
-					}
-					else if (value < cfg->Get_z0())
-					{
-						valueGrid.push_back(cfg->Get_z0());
-					}
-					else
-					{
-						valueGrid.push_back(value);
-					}*/
+				valueGrid.push_back(cfg->Get_z1());
+			}
+			else if (value < cfg->Get_z0())
+			{
+				valueGrid.push_back(cfg->Get_z0());
+			}
+			else
+			{
 				valueGrid.push_back(value);
+			}*/
+			valueGrid.push_back(value);
+			if (!cfg->Get_loaded())
+			{
 				f_max = f_max < value ? value : f_max;
 				f_min = f_min > value ? value : f_min;
 			}
@@ -571,6 +537,35 @@ void ChartClass::drawValueBar(wxDC * dc)
 	const wxBitmap colorMap(image, 24);
 	memDC.DrawBitmap(colorMap, 0, 0);
 	dc->Blit(_w - 40, 40, 20, _h - 80, &memDC, 0, 0);
+
+	dc->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+
+	if (cfg->Get_loaded())
+	{
+		dc->DrawText("Funkcja załadowana z pliku", 30, _h - 30);
+	}
+	else
+	{
+		wxString str = "";
+		switch (cfg->Get_f_type())
+		{
+		case 1:
+			str = "f(x,y) = (x^2 + y^2)/50";
+			break;
+		case 2:
+			str = "f(x,y) = 10(sgn(-65 - x) + sgn(-35 - x) + sgn(-5 - x) + sgn(25 - x) + sgn(55 - x))";
+			break;
+		case 3:
+			str = "f(x,y) = x + 2y";
+			break;
+		case 4:
+			str = "f(x,y) = 1/3 * xy/e^((0.05x)^2 * (0.05y)^2)";
+			break;
+		default:
+			str = "f(x,y) = 50sin((x^2 + y^2)/500)";
+		}
+		dc->DrawText(str, 30, _h - 30);
+	}
 }
 
 
