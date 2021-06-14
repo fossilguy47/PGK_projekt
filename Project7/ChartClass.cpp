@@ -517,7 +517,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 	// wyświetlanie wzoru funkcji
 	if (cfg->Get_loaded())
 	{
-		dc->DrawText("Funkcja załadowana z pliku", 30, _h - 30);
+		dc->DrawText("Funkcja z pliku", 30, _h - 30);
 	}
 	else
 	{
