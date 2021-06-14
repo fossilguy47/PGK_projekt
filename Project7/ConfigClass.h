@@ -17,8 +17,6 @@ private:
     int x_rot, y_rot, z_rot;
     int x_step, y_step;
 public:
-    double a;
-    double b;
     ConfigClass(GUIMyFrame* wnd);
     bool Get_contour() { return is_contour; };
     void Set_contour(bool value) { is_contour = value; };

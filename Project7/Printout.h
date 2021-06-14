@@ -9,8 +9,8 @@ class Printout : public wxPrintout, public GUIMyFrame
 {
 public:
 	Printout(const wxChar* title = (const wxChar*)"Mój wydruk") :wxPrintout(title), GUIMyFrame(NULL) {};
-	bool OnPrintPage(int page);
 	bool OnBeginDocument(int startPage, int endPage);
+	bool OnPrintPage(int page);
 	void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom, int* selPageTo);
 };
 
