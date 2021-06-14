@@ -2,6 +2,10 @@
 #include "ConfigClass.h"
 #include "ChartClass.h"
 #include "Printout.h"
+#include <fstream>
+#include <vector>
+
+std::vector<Segment> data;
 
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
@@ -24,7 +28,24 @@ void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
 
 void GUIMyFrame::load_buttonOnButtonClick( wxCommandEvent& event )
 {
-	// TODO
+	wxFileDialog WxOpenFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("Text file (*.txt)|*.txt"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+	if (WxOpenFileDialog.ShowModal() == wxID_OK)
+	{
+		double x1, y1, z1, x2, y2, z2;
+
+		std::ifstream in(WxOpenFileDialog.GetPath().ToAscii());
+		if (in.is_open())
+		{
+			while (!in.eof())
+			{
+				in >> x1 >> x2;// x1 >> y1 >> z1 >> x2 >> y2 >> z2;
+				Segment(x1, x2);
+			}
+			in.close();
+			cfg->Set_loaded(true);
+		}
+	}
 }
 
 void GUIMyFrame::x0_update( wxCommandEvent& event )

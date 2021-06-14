@@ -26,3 +26,5 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
     x_step = 10;
     y_step = 10;
 }
+
+

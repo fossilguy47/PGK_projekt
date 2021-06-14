@@ -5,43 +5,15 @@
 
 #define PI 3.14159
 
-struct Point
-{
-    double mX, mY, mZ;
-    Point(double x = 0., double y = 0., double z = 0.) : mX(x), mY(y), mZ(z) {}
-    Point& operator=(const Point& other)
-    {
-        mX = other.mX;
-        mY = other.mY;
-        mZ = other.mZ;
-        return *this;
-    }
-    void operator()(double x, double y, double z) { mX = x; mY = y; mZ = z; }
-};
-
-struct Segment {
-	Point begin, end;
-	Segment(Point begin_point, Point end_point) : begin(begin_point), end(end_point){}
-};
-
-//struct Segment
-//{
-//    Point mA, mB, mC;
-//    Segment() : mA(), mB(), mC() {}
-//    Segment(Point A, Point B, Point C=Point(0,0,0)) : mA(A), mB(B), mC(C) {}
-//    double sumZ() const
-//    {
-//        return mA.mZ + mB.mZ + mC.mZ;
-//    }
-//};
-
+void ChartClass::addSegment(Segment s) {
+	data.push_back(s);
+}
 
 ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h) : _w(w), _h(h) 
 {
 	cfg = std::move(c);
 	initializeValueGrid();
 }
-
 
 Matrix createRotationMatrix(double Rx, double Ry, double Rz) {
 	//Macierze rotacji wokół osi X, Y, Z
@@ -367,44 +339,51 @@ void ChartClass::drawChart(wxDC* dc)
 	double y1 = cfg->Get_y1();
 	double z_range = f_max - f_min;
 	int i, j;
-	for (i = 0; i < (x1 - x0) / step; i++)
-	{
-		for (j = 0; j < (y1 - y0) / step; j++)
+	
+	if (!cfg->Get_loaded()) {
+
+		for (i = 0; i < (x1 - x0) / step; i++)
 		{
-			Vector p0, p1, p2;
+			for (j = 0; j < (y1 - y0) / step; j++)
+			{
+				Vector p0, p1, p2;
+				//Ustawienie punktu początkowego i koncowego odcinka
+				double v0 = getFunctionValue(x0 + step * i, y0 + step * j);
+				double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j);
+				double v2 = getFunctionValue(x0 + step * i, y0 + step * (j + 1));
+				dc->SetPen(wxPen(RGB(255 * (v0 - f_min) / z_range, 0, 255 - 255 * (v0 - f_min) / z_range)));
+				p0.Set(x0 + step * i, y0 + step * j, v0);
+				p1.Set(x0 + step * (i + 1), y0 + step * j, v1);
+				p2.Set(x0 + step * i, y0 + step * (j + 1), v2);
+				//Rysowanie połączenia w prawym i dolnym punktem
+				drawLine(dc, p0, p1);
+				drawLine(dc, p0, p2);
+			}
+		}
+		int i_max = i;
+		int j_max = j;
+		//Dorysowanie skrajnych linii na wykresie
+		for (i = 0; i < (x1 - x0) / step; i++)
+		{
+			Vector p0, p1;
 			//Ustawienie punktu początkowego i koncowego odcinka
-			double v0 = getFunctionValue(x0 + step * i, y0 + step * j);
-			double v1 = getFunctionValue(x0 + step * (i + 1), y0 + step * j);
-			double v2 = getFunctionValue(x0 + step * i, y0 + step * (j + 1));
-			dc->SetPen(wxPen(RGB(255 * (v0 - f_min) / z_range, 0, 255 - 255 * (v0 - f_min) / z_range)));
-			p0.Set(x0 + step * i, y0 + step * j, v0);
-			p1.Set(x0 + step * (i + 1), y0 + step * j, v1);
-			p2.Set(x0 + step * i, y0 + step * (j + 1), v2);
+			p0.Set(x0 + step * i, y0 + step * j_max, getFunctionValue(x0 + step * i, y0 + step * j_max));
+			p1.Set(x0 + step * (i + 1), y0 + step * j_max, getFunctionValue(x0 + step * (i + 1), y0 + step * j_max));
 			//Rysowanie połączenia w prawym i dolnym punktem
 			drawLine(dc, p0, p1);
-			drawLine(dc, p0, p2);
+		}
+		for (j = 0; j < (y1 - y0) / step; j++)
+		{
+			Vector p0, p1;
+			//Ustawienie punktu początkowego i koncowego odcinka
+			p0.Set(x0 + step * i_max, y0 + step * j, getFunctionValue(x0 + step * i_max, y0 + step * j));
+			p1.Set(x0 + step * i_max, y0 + step * (j + 1), getFunctionValue(x0 + step * i_max, y0 + step * (j + 1)));
+			//Rysowanie połączenia w prawym i dolnym punktem
+			drawLine(dc, p0, p1);
 		}
 	}
-	int i_max = i;
-	int j_max = j;
-	//Dorysowanie skrajnych linii na wykresie
-	for (i = 0; i < (x1 - x0) / step; i++)
-	{
-		Vector p0, p1;
-		//Ustawienie punktu początkowego i koncowego odcinka
-		p0.Set(x0 + step * i, y0 + step * j_max, getFunctionValue(x0 + step * i, y0 + step * j_max));
-		p1.Set(x0 + step * (i + 1), y0 + step * j_max, getFunctionValue(x0 + step * (i + 1), y0 + step * j_max));
-		//Rysowanie połączenia w prawym i dolnym punktem
-		drawLine(dc, p0, p1);
-	}
-	for (j = 0; j < (y1 - y0) / step; j++)
-	{
-		Vector p0, p1;
-		//Ustawienie punktu początkowego i koncowego odcinka
-		p0.Set(x0 + step * i_max, y0 + step * j, getFunctionValue(x0 + step * i_max, y0 + step * j));
-		p1.Set(x0 + step * i_max, y0 + step * (j + 1), getFunctionValue(x0 + step * i_max, y0 + step * (j + 1)));
-		//Rysowanie połączenia w prawym i dolnym punktem
-		drawLine(dc, p0, p1);
+	else {
+		dc->DrawText("COKOLWIEK", cfg->a, cfg->b);
 	}
 }
 
