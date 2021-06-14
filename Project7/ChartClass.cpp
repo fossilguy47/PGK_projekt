@@ -5,11 +5,59 @@
 
 #define PI 3.14159
 
+float shepard(std::vector<Segment> &data, float x, float y, Point &p_min, Point &p_max)
+{
+	float a = 0;
+	float b = 0;
+	// wybieramy 100 segmentów (dzielnik), może też być np. 20 lub 30 żeby szybciej działało, ale 
+	// wtedy mapa konturowa gorzej wygląda
+	unsigned step = data.size() / 100 > 0 ? data.size() / 100 : 1;
+	for (unsigned i = 0; i < data.size(); i += step)
+	{
+		float w_b = (x - data[i].begin.mX) * (x - data[i].begin.mX) + (y - data[i].begin.mY) * (y - data[i].begin.mY);
+		float w = 1.f / w_b;
+
+		b += w;
+		a += w * data[i].begin.mZ;
+
+		w_b = (x - data[i].end.mX) * (x - data[i].end.mX) + (y - data[i].end.mY) * (y - data[i].end.mY);
+		w = 1.f / w_b;
+
+		b += w;
+		a += w * data[i].end.mZ;
+	}
+	
+	// punkty, w których znajduje się wartość minimalna (p_min) i maksymalna (p_max) funkcji
+	float w_b = (x - p_min.mX) * (x - p_min.mX) + (y - p_min.mY) * (y - p_min.mY);
+	float w = 1.f / w_b;
+	b += w;
+	a += w * p_min.mZ;
+	
+	w_b = (x - p_max.mX) * (x - p_max.mX) + (y - p_max.mY) * (y - p_max.mY);
+	w = 1.f / w_b;
+	b += w;
+	a += w * p_max.mZ;
+
+	return a / b;
+}
+
+
 ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h, std::vector<Segment> data) : _w(w), _h(h) 
 {
 	cfg = std::move(c);
-	initializeValueGrid();
 	loaded_data = data;
+	if(!cfg->Get_loaded() && !cfg->Get_contour()) 
+		initializeValueGrid();
+	else
+	{
+		for (int i = 0; i < loaded_data.size(); i++)
+		{
+			f_min = loaded_data[i].begin.mZ < f_min ? loaded_data[i].begin.mZ : f_min;
+			f_max = loaded_data[i].begin.mZ > f_max ? loaded_data[i].begin.mZ : f_max;
+			f_min = loaded_data[i].end.mZ < f_min ? loaded_data[i].end.mZ : f_min;
+			f_max = loaded_data[i].end.mZ > f_max ? loaded_data[i].end.mZ : f_max;
+		}
+	}
 }
 
 Matrix createRotationMatrix(double Rx, double Ry, double Rz) {
@@ -182,52 +230,148 @@ void ChartClass::drawAxes(wxDC* dc) {
 void ChartClass::initializeValueGrid()
 {
 	valueGrid.clear();
-	double x0 = cfg->Get_x0();
-	double x1 = cfg->Get_x1();
-	double y0 = cfg->Get_y0();
-	double y1 = cfg->Get_y1();
-	if (x1 - x0 > y1 - y0)
+	if (cfg->Get_loaded()) 
 	{
-		plot_w = 500;
-		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
-	}
-	// kiedy szerokość > długość
-	else if (x1 - x0 < y1 - y0)
-	{
-		plot_h = 500;
-		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
-	}
-	// kiedy długość == szerokość
-	else
-	{
-		plot_w = 500;
-		plot_h = 500;
-	}
-	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
-	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
-	f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
-	for (int i = 0; i < plot_h; i++) 
-	{
-		for (int j = 0; j < plot_w; j++)
+		double x0 = 1000.0;
+		double x1 = -1000.0;
+		double y0 = 1000.0;
+		double y1 = -1000.0;
+		f_min = loaded_data[0].begin.mZ;
+		f_max = loaded_data[0].begin.mZ;
+		
+		Point a, b;
+
+		for (int i = 0; i < loaded_data.size(); i++)
 		{
-			float value = getFunctionValue(cfg->Get_x0() + j * x_step, cfg->Get_y1() - i * y_step);
-			/* progowanie wartości (na razie okomentowane, by wychodziły wartości
-				f_min i fmax nieograniczone przez z0 i z1)*/
-			/*if (value > cfg->Get_z1())
+			x0 = loaded_data[i].begin.mX < x0 ? loaded_data[i].begin.mX : x0;
+			x1 = loaded_data[i].begin.mX > x1 ? loaded_data[i].begin.mX : x1;
+			y0 = loaded_data[i].begin.mY < y0 ? loaded_data[i].begin.mY : y0;
+			y1 = loaded_data[i].begin.mY > y1 ? loaded_data[i].begin.mY : y1;
+			//f_min = loaded_data[i].begin.mZ < f_min ? loaded_data[i].begin.mZ : f_min;
+			//f_max = loaded_data[i].begin.mZ > f_max ? loaded_data[i].begin.mZ : f_max;
+			if (f_min > loaded_data[i].begin.mZ)
 			{
-				valueGrid.push_back(cfg->Get_z1());
+				f_min = loaded_data[i].begin.mZ;
+				a = loaded_data[i].begin;
 			}
-			else if (value < cfg->Get_z0())
+
+			if (f_max < loaded_data[i].begin.mZ)
 			{
-				valueGrid.push_back(cfg->Get_z0());
+				f_max = loaded_data[i].begin.mZ;
+				b = loaded_data[i].begin;
 			}
-			else
+
+			x0 = loaded_data[i].end.mX < x0 ? loaded_data[i].end.mX : x0;
+			x1 = loaded_data[i].end.mX > x1 ? loaded_data[i].end.mX : x1;
+			y0 = loaded_data[i].end.mY < y0 ? loaded_data[i].end.mY : y0;
+			y1 = loaded_data[i].end.mY > y1 ? loaded_data[i].end.mY : y1;
+			//f_min = loaded_data[i].end.mZ < f_min ? loaded_data[i].end.mZ : f_min;
+			//f_max = loaded_data[i].end.mZ > f_max ? loaded_data[i].end.mZ : f_max;
+			if (f_min > loaded_data[i].end.mZ)
 			{
+				f_min = loaded_data[i].end.mZ;
+				a = loaded_data[i].end;
+			}
+
+			if (f_max < loaded_data[i].end.mZ)
+			{
+				f_max = loaded_data[i].end.mZ;
+				b = loaded_data[i].end;
+			}
+		}
+		
+		if (x1 - x0 > y1 - y0)
+		{
+			plot_w = 500;
+			plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
+		}
+		// kiedy szerokość > długość
+		else if (x1 - x0 < y1 - y0)
+		{
+			plot_h = 500;
+			plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
+		}
+		// kiedy długość == szerokość
+		else
+		{
+			plot_w = 500;
+			plot_h = 500;
+		}
+		double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
+		double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+		for (int i = 0; i < plot_h; i++)
+		{
+			for (int j = 0; j < plot_w; j++)
+			{
+				float value = shepard(loaded_data, x0 + j*x_step, y1 - i*y_step, a, b);
+				/* progowanie wartości (na razie okomentowane, by wychodziły wartości
+					f_min i fmax nieograniczone przez z0 i z1)*/
+					/*if (value > cfg->Get_z1())
+					{
+						valueGrid.push_back(cfg->Get_z1());
+					}
+					else if (value < cfg->Get_z0())
+					{
+						valueGrid.push_back(cfg->Get_z0());
+					}
+					else
+					{
+						valueGrid.push_back(value);
+					}*/
 				valueGrid.push_back(value);
-			}*/
-			valueGrid.push_back(value);
-			f_max = f_max < value ? value : f_max;
-			f_min = f_min > value ? value : f_min;
+			}
+		}
+	}
+	
+	else 
+	{
+		double x0 = cfg->Get_x0();
+		double x1 = cfg->Get_x1();
+		double y0 = cfg->Get_y0();
+		double y1 = cfg->Get_y1();
+		if (x1 - x0 > y1 - y0)
+		{
+			plot_w = 500;
+			plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
+		}
+		// kiedy szerokość > długość
+		else if (x1 - x0 < y1 - y0)
+		{
+			plot_h = 500;
+			plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
+		}
+		// kiedy długość == szerokość
+		else
+		{
+			plot_w = 500;
+			plot_h = 500;
+		}
+		double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
+		double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+		f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
+		for (int i = 0; i < plot_h; i++)
+		{
+			for (int j = 0; j < plot_w; j++)
+			{
+				float value = getFunctionValue(cfg->Get_x0() + j * x_step, cfg->Get_y1() - i * y_step);
+				/* progowanie wartości (na razie okomentowane, by wychodziły wartości
+					f_min i fmax nieograniczone przez z0 i z1)*/
+					/*if (value > cfg->Get_z1())
+					{
+						valueGrid.push_back(cfg->Get_z1());
+					}
+					else if (value < cfg->Get_z0())
+					{
+						valueGrid.push_back(cfg->Get_z0());
+					}
+					else
+					{
+						valueGrid.push_back(value);
+					}*/
+				valueGrid.push_back(value);
+				f_max = f_max < value ? value : f_max;
+				f_min = f_min > value ? value : f_min;
+			}
 		}
 	}
 }
@@ -254,15 +398,6 @@ void ChartClass::drawContourMap(wxDC *dc)
 	memDC.SetBrush(*wxWHITE_BRUSH);
 	memDC.SetBackground(*wxWHITE_BRUSH);
 
-	/*double f_min = valueGrid[0], f_max = valueGrid[0];
-	for (int i = 0; i < plot_h; i++)
-		for (int j = 0; j < plot_w; j++)
-		{
-			f_min = valueGrid[plot_w * i + j] < f_min ? valueGrid[plot_w * i + j] : f_min;
-			f_max = valueGrid[plot_w * i + j] > f_max ? valueGrid[plot_w * i + j] : f_max;
-		}*/
-
-	// część odpowiedzialna za kolorowanie mapy
 	unsigned char* pixels = image.GetData();
 	for (int i = 0; i < plot_h; i++)
 	{
@@ -280,7 +415,7 @@ void ChartClass::drawContourMap(wxDC *dc)
 	memDC.DrawBitmap(colorMap, 0, 0);
 
 	// kontury (póki co ustawione na 5 poziomic)
-	dc->SetPen(wxPen(RGB(0, 0, 0)));
+	/*dc->SetPen(wxPen(RGB(0, 0, 0)));
 	int NoLevels = 5;
 	for (int i = 0; i < NoLevels; i++)
 	{
@@ -296,7 +431,7 @@ void ChartClass::drawContourMap(wxDC *dc)
 								(valueGrid[plot_w * (a + y) + b + x] < threshold))
 								memDC.DrawPoint(x, y);
 				}
-	}
+	}*/
 
 	memDC.SetPen(*wxBLACK_PEN);
 

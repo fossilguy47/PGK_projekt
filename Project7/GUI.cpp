@@ -160,7 +160,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_staticText231->Wrap( -1 );
 	bSizer1011->Add( m_staticText231, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	x_slider = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
+	x_slider = new wxSlider( this, wxID_ANY, 13, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
 	bSizer1011->Add( x_slider, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5 );
 
 
@@ -173,7 +173,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_staticText2311->Wrap( -1 );
 	bSizer10111->Add( m_staticText2311, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	y_slider = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
+	y_slider = new wxSlider( this, wxID_ANY, 0, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
 	bSizer10111->Add( y_slider, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5 );
 
 
@@ -186,7 +186,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_staticText2312->Wrap( -1 );
 	bSizer10112->Add( m_staticText2312, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	z_slider = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
+	z_slider = new wxSlider( this, wxID_ANY, 38, 0, 100, wxDefaultPosition, wxSize( -1,20 ), wxSL_HORIZONTAL );
 	bSizer10112->Add( z_slider, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5 );
 
 

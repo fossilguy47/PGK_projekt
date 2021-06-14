@@ -2,8 +2,7 @@
 #include "ConfigClass.h"
 #include "ChartClass.h"
 #include "Printout.h"
-#include <fstream>
-#include <vector>
+
 
 GUIMyFrame::GUIMyFrame( wxWindow* parent )
 :
