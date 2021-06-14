@@ -21,8 +21,8 @@ double shepard(std::vector<Segment> &data, double x, double y, Point &p_min, Poi
 	b += w;
 	a += w * p_max.mZ;
 
-	// wybieramy 100 segmentów (dzielnik)
-	unsigned step = data.size() / 100 > 0 ? data.size() / 100 : 1;
+	// wybieramy 20 segmentów (dzielnik)
+	unsigned step = data.size() / 20 > 0 ? data.size() / 20 : 1;
 	for (unsigned i = 0; i < data.size(); i += step)
 	{
 		w_b = (x - data[i].begin.mX) * (x - data[i].begin.mX) + (y - data[i].begin.mY) * (y - data[i].begin.mY);
@@ -305,20 +305,20 @@ void ChartClass::initializeValueGrid()
 
 	if (x1 - x0 > y1 - y0)
 	{
-		plot_w = 500;
+		plot_w = _h - 100 > 100 ? _h-100 : 200;
 		plot_h = static_cast<int>((y1 - y0) / (x1 - x0) * plot_w);
 	}
 	// kiedy szerokość > długość
 	else if (x1 - x0 < y1 - y0)
 	{
-		plot_h = 500;
+		plot_h = _h - 100 > 100 ? _h - 100 : 200;
 		plot_w = static_cast<int>((x1 - x0) / (y1 - y0) * plot_h);
 	}
 	// kiedy długość == szerokość
 	else
 	{
-		plot_w = 500;
-		plot_h = 500;
+		plot_w = _h - 100 > 100 ? _h - 100 : 200;
+		plot_h = _h - 100 > 100 ? _h - 100 : 200;
 	}
 	double x_step = (x1 - x0) / (plot_w - 1.0);
 	double y_step = (y1 - y0) / (plot_h - 1.0);
