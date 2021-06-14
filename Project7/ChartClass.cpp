@@ -174,7 +174,7 @@ void ChartClass::drawAxes(wxDC* dc) {
 	dc->Clear();
 	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	//Poczatkowy i koncowy punkt odcinka
-	Vector p0, x1, y1, z1;
+	Vector p0, x1, y1, z1, arr_x, arr_y, arr_z;
 	//Ustawienie punktu p0owego i koncowego odcinka
 	p0.Set(0,0,0);
 	x1.Set(150,0,0);
@@ -183,6 +183,19 @@ void ChartClass::drawAxes(wxDC* dc) {
 	drawLine(dc, p0, x1);
 	drawLine(dc, p0, y1);
 	drawLine(dc, p0, z1);
+	arr_x.Set(140, -5, 0);
+	arr_y.Set(-5, 140, 0);
+	arr_z.Set(-2, 5, 190);
+	drawLine(dc, x1, arr_x);
+	drawLine(dc, y1, arr_y);
+	drawLine(dc, z1, arr_z);
+	arr_x.Set(140, 5, 0);
+	arr_y.Set(5, 140, 0);
+	arr_z.Set(5, -2, 190);
+	drawLine(dc, x1, arr_x);
+	drawLine(dc, y1, arr_y);
+	drawLine(dc, z1, arr_z);
+
 	//Text osi
 	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	Vector x_text, y_text, z_text;
