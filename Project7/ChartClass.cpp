@@ -250,20 +250,11 @@ void ChartClass::initializeValueGrid()
 	a = b = Point(0,0,0);
 	if (cfg->Get_loaded())
 	{
-		x0 = 1000.0;
-		x1 = -1000.0;
-		y0 = 1000.0;
-		y1 = -1000.0;
 		f_min = loaded_data[0].begin.mZ;
 		f_max = loaded_data[0].begin.mZ;
 
-
 		for (unsigned int i = 0; i < loaded_data.size(); i++)
 		{
-			x0 = loaded_data[i].begin.mX < x0 ? loaded_data[i].begin.mX : x0;
-			x1 = loaded_data[i].begin.mX > x1 ? loaded_data[i].begin.mX : x1;
-			y0 = loaded_data[i].begin.mY < y0 ? loaded_data[i].begin.mY : y0;
-			y1 = loaded_data[i].begin.mY > y1 ? loaded_data[i].begin.mY : y1;
 			if (f_min > loaded_data[i].begin.mZ)
 			{
 				f_min = loaded_data[i].begin.mZ;
@@ -276,10 +267,6 @@ void ChartClass::initializeValueGrid()
 				b = loaded_data[i].begin;
 			}
 
-			x0 = loaded_data[i].end.mX < x0 ? loaded_data[i].end.mX : x0;
-			x1 = loaded_data[i].end.mX > x1 ? loaded_data[i].end.mX : x1;
-			y0 = loaded_data[i].end.mY < y0 ? loaded_data[i].end.mY : y0;
-			y1 = loaded_data[i].end.mY > y1 ? loaded_data[i].end.mY : y1;
 			if (f_min > loaded_data[i].end.mZ)
 			{
 				f_min = loaded_data[i].end.mZ;
@@ -295,12 +282,13 @@ void ChartClass::initializeValueGrid()
 	}
 	else
 	{
-		x0 = cfg->Get_x0();
-		x1 = cfg->Get_x1();
-		y0 = cfg->Get_y0();
-		y1 = cfg->Get_y1();
 		f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
 	}
+
+	x0 = cfg->Get_x0();
+	x1 = cfg->Get_x1();
+	y0 = cfg->Get_y0();
+	y1 = cfg->Get_y1();
 
 	if (x1 - x0 > y1 - y0)
 	{
