@@ -1,14 +1,11 @@
 #ifndef __ChartClass__
 #define __ChartClass__
-
 #include <memory>
 #include <vector>
 #include "ConfigClass.h"
 
 class Matrix;
 class Vector;
-
-
 
 class ChartClass
 {
@@ -33,8 +30,6 @@ public:
     std::vector<float> Get_valueGrid() { return valueGrid; }
     float Get_f_max() { return f_max; }
     float Get_f_min() { return f_min; }
-    /* wstawi³am t¹ funkcjê do ChartClass, ale nie wiem czy nie lepiej,
-     aby ta funkcja znajdowa³a siê w GUIMyFrame*/
     void drawValueBar(wxDC *dc);;
 };
 

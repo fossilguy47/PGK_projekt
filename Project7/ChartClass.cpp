@@ -21,8 +21,7 @@ double shepard(std::vector<Segment> &data, double x, double y, Point &p_min, Poi
 	b += w;
 	a += w * p_max.mZ;
 
-	// wybieramy 100 segmentów (dzielnik), może też być np. 20 lub 30 żeby szybciej działało, ale 
-	// wtedy mapa konturowa gorzej wygląda
+	// wybieramy 100 segmentów (dzielnik)
 	unsigned step = data.size() / 100 > 0 ? data.size() / 100 : 1;
 	for (unsigned i = 0; i < data.size(); i += step)
 	{
@@ -51,7 +50,7 @@ ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h, std::vector
 		initializeValueGrid();
 	else
 	{
-		for (int i = 0; i < loaded_data.size(); i++)
+		for (unsigned int i = 0; i < loaded_data.size(); i++)
 		{
 			f_min = loaded_data[i].begin.mZ < f_min ? loaded_data[i].begin.mZ : f_min;
 			f_max = loaded_data[i].begin.mZ > f_max ? loaded_data[i].begin.mZ : f_max;
@@ -89,29 +88,23 @@ Matrix createRotationMatrix(double Rx, double Ry, double Rz) {
 
 Matrix ChartClass::createTransformationMatrix() {
 	//wartosci zmian x y z odpowiednio do translacji, rotacji, skalowania
-	double Tx, Ty, Tz, Rx, Ry, Rz, Sx, Sy, Sz;
+	double Rx, Ry, Rz, Sx, Sy, Sz;
 	//ustawienie odpowiednich wartosci parametrow
-
-	////TU WSTAWIĆ PRAWIDŁOWE PARAMETRY
-	Tx = 0.0;
-	Ty = 0.0;
-	Tz = 2.0;
 	Rx = cfg->Get_x_rot() * 360.0 / 100.0;
 	Ry = cfg->Get_y_rot() * 360.0 / 100.0;
 	Rz = cfg->Get_z_rot() * 360.0 / 100.0;
-	Sx = (cfg->Get_zoom()/50.0) / 100.0;
-	Sy = (cfg->Get_zoom() / 50.0) / 100.0;
-	Sz = (cfg->Get_zoom() / 50.0) / 100.0;
-
+	Sx = ((cfg->Get_zoom() + 10.0) / 50.0) / 100.0;
+	Sy = ((cfg->Get_zoom() + 10.0) / 50.0) / 100.0;
+	Sz = ((cfg->Get_zoom() + 10.0) / 50.0) / 100.0;
 	//macierze przeksztalcen odpowiednio translacji, rotacji, skalowania
 	Matrix T, R, S;
 	//macierz translacji, T[3][3] juz wypelnione
-	T.data[0][0] = 1;
-	T.data[1][1] = 1;
-	T.data[2][2] = 1;
-	T.data[0][3] = Tx;
-	T.data[1][3] = -Ty;
-	T.data[2][3] = Tz;
+	T.data[0][0] = 1.0;
+	T.data[1][1] = 1.0;
+	T.data[2][2] = 1.0;
+	T.data[0][3] = 0.0;
+	T.data[1][3] = 0.0;
+	T.data[2][3] = 2.0;
 	//uzupelnienie macierzy rotacji przy wykorzystaniu osobnej funkcji
 	R = createRotationMatrix(Rx, Ry, Rz);
 	//macierz skalowania
@@ -170,7 +163,6 @@ void ChartClass::transformVector(Vector& v)
 	C.data[2][2] = 1;
 	C.data[0][3] = 0.5;
 	C.data[1][3] = 0.5;
-
 	//Przemonozenie obu punktów przez macierze transformacji
 	v = T * v;
 	//Rzutowanie punktów na płaszczyznę ekranu, "spłaszczenie" osi Z
@@ -193,7 +185,7 @@ void ChartClass::drawAxes(wxDC* dc) {
 	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	//Poczatkowy i koncowy punkt odcinka
 	Vector p0, x1, y1, z1, arr_x, arr_y, arr_z;
-	//Ustawienie punktu p0owego i koncowego odcinka
+	//Ustawienie punktu poczatku i konca odcinka, rysowanie osi
 	p0.Set(0,0,0);
 	x1.Set(150,0,0);
 	y1.Set(0, 150, 0);
@@ -231,7 +223,7 @@ void ChartClass::drawAxes(wxDC* dc) {
 		p.Set(i, 0, 0);
 		transformVector(p);
 		dc->DrawCircle(wxPoint(p.GetX() * _w, p.GetY() * _h), 1);
-		p.Set(i, -10, 0);
+		p.Set(i, 5, 0);
 		transformVector(p);
 		dc->DrawText(wxString::Format(wxT("%d"), i), wxPoint(p.GetX() * _w, p.GetY() * _h));
 		p.Set(0, i, 0);
@@ -267,14 +259,12 @@ void ChartClass::initializeValueGrid()
 		f_max = loaded_data[0].begin.mZ;
 
 
-		for (int i = 0; i < loaded_data.size(); i++)
+		for (unsigned int i = 0; i < loaded_data.size(); i++)
 		{
 			x0 = loaded_data[i].begin.mX < x0 ? loaded_data[i].begin.mX : x0;
 			x1 = loaded_data[i].begin.mX > x1 ? loaded_data[i].begin.mX : x1;
 			y0 = loaded_data[i].begin.mY < y0 ? loaded_data[i].begin.mY : y0;
 			y1 = loaded_data[i].begin.mY > y1 ? loaded_data[i].begin.mY : y1;
-			//f_min = loaded_data[i].begin.mZ < f_min ? loaded_data[i].begin.mZ : f_min;
-			//f_max = loaded_data[i].begin.mZ > f_max ? loaded_data[i].begin.mZ : f_max;
 			if (f_min > loaded_data[i].begin.mZ)
 			{
 				f_min = loaded_data[i].begin.mZ;
@@ -291,8 +281,6 @@ void ChartClass::initializeValueGrid()
 			x1 = loaded_data[i].end.mX > x1 ? loaded_data[i].end.mX : x1;
 			y0 = loaded_data[i].end.mY < y0 ? loaded_data[i].end.mY : y0;
 			y1 = loaded_data[i].end.mY > y1 ? loaded_data[i].end.mY : y1;
-			//f_min = loaded_data[i].end.mZ < f_min ? loaded_data[i].end.mZ : f_min;
-			//f_max = loaded_data[i].end.mZ > f_max ? loaded_data[i].end.mZ : f_max;
 			if (f_min > loaded_data[i].end.mZ)
 			{
 				f_min = loaded_data[i].end.mZ;
@@ -340,7 +328,6 @@ void ChartClass::initializeValueGrid()
 		{
 			float value = cfg->Get_loaded() ? shepard(loaded_data, x0 + j * x_step, y1 - i * y_step, a, b)
 											: getFunctionValue(x0 + j * x_step, y1 - i * y_step);
-				
 			valueGrid.push_back(value);
 			if (!cfg->Get_loaded())
 			{
@@ -388,11 +375,9 @@ void ChartClass::drawContourMap(wxDC *dc)
 
 	const wxBitmap colorMap(image, 24);
 	memDC.DrawBitmap(colorMap, 0, 0);
-
 	memDC.SetPen(*wxBLACK_PEN);
 
 	// kratka zaprogramowana na wartość pojedynczego kroku
-
 	int x_step = cfg->Get_x_step();
 	int y_step = cfg->Get_y_step();
 	int w_step = static_cast<int>(plot_w*x_step / (cfg->Get_x1()- cfg->Get_x0()));
@@ -414,7 +399,6 @@ void ChartClass::drawContourMap(wxDC *dc)
 		//memDC.DrawLine(0, i, 10, i); / krótka kreska
 		memDC.DrawLine(0, plot_h-i, plot_w, plot_h-i);
 	}
-
 	dc->Blit(100, 20, plot_w, plot_h, &memDC, 0, 0);
 }
 
