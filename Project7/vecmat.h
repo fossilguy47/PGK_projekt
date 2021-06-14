@@ -1,3 +1,4 @@
+//Wykorzystany zostal kod udostepniony przez dr Janusza Malinowskiego podczas zajec
 #include <stdio.h>
 
 class Vector

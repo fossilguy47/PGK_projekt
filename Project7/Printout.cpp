@@ -13,8 +13,6 @@ bool Printout::OnPrintPage(int pageNum)
 	wxPageSetupDialog PageSetupDlg(this, PageSetupData.get());
 	PageSetupDlg.ShowModal();
 	*PageSetupData = PageSetupDlg.GetPageSetupData();
-	//jest ladniej po odkomentowaniu ale zmiany tam poczynione nic nie daja
-	//PageSetupDlg.ShowModal();
 	wxDC* dc = GetDC();
 	int w, h;
 	drawing_panel->GetSize(&w, &h);
