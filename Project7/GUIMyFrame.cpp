@@ -51,12 +51,12 @@ void GUIMyFrame::x0_update( wxCommandEvent& event )
 {
 if (x0_SpinCtrlDouble->GetValue() < x1_SpinCtrlDouble->GetValue())
 {
-cfg->Set_x0(x0_SpinCtrlDouble->GetValue());
+	cfg->Set_x0(x0_SpinCtrlDouble->GetValue());
 }
 else
 {
-x0_SpinCtrlDouble->SetValue(cfg->Get_x0());
-wxBell();
+	x0_SpinCtrlDouble->SetValue(cfg->Get_x0());
+	wxBell();
 }
 }
 
@@ -64,12 +64,12 @@ void GUIMyFrame::y0_update( wxCommandEvent& event )
 {
 if (y0_SpinCtrlDouble->GetValue() < y1_SpinCtrlDouble->GetValue())
 {
-cfg->Set_y0(y0_SpinCtrlDouble->GetValue());
+	cfg->Set_y0(y0_SpinCtrlDouble->GetValue());
 }
 else
 {
-y0_SpinCtrlDouble->SetValue(cfg->Get_y0());
-wxBell();
+	y0_SpinCtrlDouble->SetValue(cfg->Get_y0());
+	wxBell();
 }
 }
 
@@ -77,12 +77,12 @@ void GUIMyFrame::z0_update( wxCommandEvent& event )
 {
 if (z0_SpinCtrlDouble->GetValue() < z1_SpinCtrlDouble->GetValue())
 {
-cfg->Set_z0(z0_SpinCtrlDouble->GetValue());
+	cfg->Set_z0(z0_SpinCtrlDouble->GetValue());
 }
 else
 {
-z0_SpinCtrlDouble->SetValue(cfg->Get_z0());
-wxBell();
+	z0_SpinCtrlDouble->SetValue(cfg->Get_z0());
+	wxBell();
 }
 }
 
@@ -90,12 +90,12 @@ void GUIMyFrame::x1_update( wxCommandEvent& event )
 {
 if (x1_SpinCtrlDouble->GetValue() > x0_SpinCtrlDouble->GetValue())
 {
-cfg->Set_x1(x1_SpinCtrlDouble->GetValue());
+	cfg->Set_x1(x1_SpinCtrlDouble->GetValue());
 }
 else
 {
-x1_SpinCtrlDouble->SetValue(cfg->Get_x1());
-wxBell();
+	x1_SpinCtrlDouble->SetValue(cfg->Get_x1());
+	wxBell();
 }
 }
 
@@ -103,12 +103,12 @@ void GUIMyFrame::y1_update( wxCommandEvent& event )
 {
 if (y1_SpinCtrlDouble->GetValue() > y0_SpinCtrlDouble->GetValue())
 {
-cfg->Set_y1(y1_SpinCtrlDouble->GetValue());
+	cfg->Set_y1(y1_SpinCtrlDouble->GetValue());
 }
 else
 {
-y1_SpinCtrlDouble->SetValue(cfg->Get_y1());
-wxBell();
+	y1_SpinCtrlDouble->SetValue(cfg->Get_y1());
+	wxBell();
 }
 }
 
@@ -116,12 +116,12 @@ void GUIMyFrame::z1_update( wxCommandEvent& event )
 {
 if (z1_SpinCtrlDouble->GetValue() > z0_SpinCtrlDouble->GetValue())
 {
-cfg->Set_z1(z1_SpinCtrlDouble->GetValue());
+	cfg->Set_z1(z1_SpinCtrlDouble->GetValue());
 }
 else
 {
-z1_SpinCtrlDouble->SetValue(cfg->Get_z1());
-wxBell();
+	z1_SpinCtrlDouble->SetValue(cfg->Get_z1());
+	wxBell();
 }
 }
 
@@ -134,21 +134,21 @@ void GUIMyFrame::contour_checkBoxOnCheckBox( wxCommandEvent& event )
 {
 if (contour_checkBox->IsChecked())
 {
-cfg->Set_contour(true);
-zoom_slider->Disable();
-x_slider->Disable();
-y_slider->Disable();
-z_slider->Disable();
+	cfg->Set_contour(true);
+	zoom_slider->Disable();
+	x_slider->Disable();
+	y_slider->Disable();
+	z_slider->Disable();
 }
 else
 {
-cfg->Set_contour(false);
-zoom_slider->Enable();
-x_slider->Enable();
-y_slider->Enable();
-z_slider->Enable();
+	cfg->Set_contour(false);
+	zoom_slider->Enable();
+	x_slider->Enable();
+	y_slider->Enable();
+	z_slider->Enable();
 }
-Repaint();
+	Repaint();
 }
 
 void GUIMyFrame::x_step_update( wxCommandEvent& event )
@@ -207,12 +207,10 @@ void GUIMyFrame::save_buttonOnButtonClick( wxCommandEvent& event ){
 
 void GUIMyFrame::print_buttonOnButtonClick( wxCommandEvent& event )
 {
-
 wxPrinter Printer;
 Printout MyPrintout;
 Printer.Print(this, &MyPrintout, true);
 }
-
 
 void GUIMyFrame::Repaint()
 {

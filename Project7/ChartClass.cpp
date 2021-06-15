@@ -41,7 +41,6 @@ double shepard(std::vector<Segment> &data, double x, double y, Point &p_min, Poi
 	return a / b;
 }
 
-
 ChartClass::ChartClass(std::shared_ptr<ConfigClass> c, int w, int h, std::vector<Segment> data) : _w(w), _h(h) 
 {
 	cfg = std::move(c);

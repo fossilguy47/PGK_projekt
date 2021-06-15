@@ -73,7 +73,6 @@ class GUIMyFrame : public MyFrame
 		std::shared_ptr<ConfigClass> cfg;
 		std::vector<Segment> data;
 		void Repaint();
-
 };
 
 #endif // __GUIMyFrame__
