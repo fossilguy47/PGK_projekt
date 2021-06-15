@@ -13,7 +13,7 @@ ConfigClass::ConfigClass(GUIMyFrame* wnd)
     x_stop = 50.0;
     y_start = -50.0;
     y_stop = 50.0;
-    f_type = 0;
+    f_type = 1;
     x0 = -50.0;
     y0 = -50.0;
     z0 = -50.0;

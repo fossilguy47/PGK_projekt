@@ -202,17 +202,16 @@ void ChartClass::drawAxes(wxDC* dc) {
 	drawLine(dc, p0, z1);
 	arr_x.Set(140, -5, 0);
 	arr_y.Set(-5, 140, 0);
-	arr_z.Set(-2, 5, 190);
+	arr_z.Set(-3, 3, 190);
 	drawLine(dc, x1, arr_x);
 	drawLine(dc, y1, arr_y);
 	drawLine(dc, z1, arr_z);
 	arr_x.Set(140, 5, 0);
 	arr_y.Set(5, 140, 0);
-	arr_z.Set(5, -2, 190);
+	arr_z.Set(3, -3, 190);
 	drawLine(dc, x1, arr_x);
 	drawLine(dc, y1, arr_y);
 	drawLine(dc, z1, arr_z);
-
 	//Text osi
 	dc->SetPen(wxPen(RGB(0, 0, 0)));
 	Vector x_text, y_text, z_text;
@@ -225,6 +224,30 @@ void ChartClass::drawAxes(wxDC* dc) {
 	dc->DrawText("X", wxPoint(x_text.GetX() * _w, x_text.GetY() * _h));
 	dc->DrawText("Y", wxPoint(y_text.GetX() * _w, y_text.GetY() * _h));
 	dc->DrawText("Z", wxPoint(z_text.GetX() * _w, z_text.GetY() * _h));
+	//Skala osi
+	Vector p;
+	for (int i = 25 ; i < 150; i+=25) {
+		p.Set(i, 0, 0);
+		transformVector(p);
+		dc->DrawCircle(wxPoint(p.GetX() * _w, p.GetY() * _h), 1);
+		p.Set(i, -10, 0);
+		transformVector(p);
+		dc->DrawText(wxString::Format(wxT("%d"), i), wxPoint(p.GetX() * _w, p.GetY() * _h));
+		p.Set(0, i, 0);
+		transformVector(p);
+		dc->DrawCircle(wxPoint(p.GetX() * _w, p.GetY() * _h), 1);
+		p.Set(-5, i, 0);
+		transformVector(p);
+		dc->DrawText(wxString::Format(wxT("%d"), i), wxPoint(p.GetX() * _w, p.GetY() * _h));
+	}
+	for (int i = 50; i <= 200; i += 50) {
+		p.Set(0, 0, i);
+		transformVector(p);
+		dc->DrawCircle(wxPoint(p.GetX() * _w, p.GetY() * _h), 1);
+		p.Set(0, 5, i);
+		transformVector(p);
+		dc->DrawText(wxString::Format(wxT("%d"), i), wxPoint(p.GetX() * _w, p.GetY() * _h));
+	}
 }
 
 void ChartClass::initializeValueGrid()
