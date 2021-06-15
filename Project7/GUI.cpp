@@ -110,11 +110,17 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 
 	bSizer7->Add( bSizer7121, 1, wxEXPAND, 5 );
 
-	draw_button = new wxButton( this, wxID_ANY, wxT("Rysuj"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer7->Add( draw_button, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	wxBoxSizer* bSizer14;
+	bSizer14 = new wxBoxSizer( wxVERTICAL );
+
+
+	bSizer7->Add( bSizer14, 1, wxEXPAND, 5 );
 
 	contour_checkBox = new wxCheckBox( this, wxID_ANY, wxT("konturowa"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer7->Add( contour_checkBox, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	draw_button = new wxButton( this, wxID_ANY, wxT("Rysuj"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	bSizer7->Add( draw_button, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
 
 	wxWrapSizer* wSizer1;
 	wSizer1 = new wxWrapSizer( wxHORIZONTAL, wxWRAPSIZER_DEFAULT_FLAGS );
@@ -124,6 +130,8 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wSizer1->Add( x_step_staticText, 0, wxALIGN_CENTER|wxALL, 5 );
 
 	x_step_spinCtrl = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,30 ), wxSP_ARROW_KEYS, 1, 999, 10 );
+	x_step_spinCtrl->Enable( false );
+
 	wSizer1->Add( x_step_spinCtrl, 0, wxALIGN_CENTER|wxALL, 5 );
 
 	y_step_staticText = new wxStaticText( this, wxID_ANY, wxT("krok_y:"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -131,6 +139,8 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wSizer1->Add( y_step_staticText, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	y_step_spinCtrl = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,30 ), wxSP_ARROW_KEYS, 1, 999, 10 );
+	y_step_spinCtrl->Enable( false );
+
 	wSizer1->Add( y_step_spinCtrl, 0, wxALL, 5 );
 
 
@@ -235,8 +245,8 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	x1_SpinCtrlDouble->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x1_update ), NULL, this );
 	y1_SpinCtrlDouble->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y1_update ), NULL, this );
 	z1_SpinCtrlDouble->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::z1_update ), NULL, this );
-	draw_button->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	contour_checkBox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( MyFrame::contour_checkBoxOnCheckBox ), NULL, this );
+	draw_button->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	x_step_spinCtrl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x_step_update ), NULL, this );
 	y_step_spinCtrl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y_step_update ), NULL, this );
 	zoom_slider->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );
@@ -291,8 +301,8 @@ MyFrame::~MyFrame()
 	x1_SpinCtrlDouble->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x1_update ), NULL, this );
 	y1_SpinCtrlDouble->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y1_update ), NULL, this );
 	z1_SpinCtrlDouble->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::z1_update ), NULL, this );
-	draw_button->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	contour_checkBox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( MyFrame::contour_checkBoxOnCheckBox ), NULL, this );
+	draw_button->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::draw_buttonOnButtonClick ), NULL, this );
 	x_step_spinCtrl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::x_step_update ), NULL, this );
 	y_step_spinCtrl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MyFrame::y_step_update ), NULL, this );
 	zoom_slider->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( MyFrame::zoom_sliderOnScroll ), NULL, this );

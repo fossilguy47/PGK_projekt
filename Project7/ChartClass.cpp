@@ -136,7 +136,7 @@ double ChartClass::getFunctionValue(double x, double y)
 	switch (cfg->Get_f_type())
 	{
 	case 1:
-		return (x * x + y * y) / 50;
+		return 50 * sin((x * x + y * y) / 500);
 		break;
 	case 2:
 		return (sign(-65 - x) + sign(-35 - x) + sign(-5 - x) + sign(25 - x) + sign(55 - x)) * 10;
@@ -148,7 +148,7 @@ double ChartClass::getFunctionValue(double x, double y)
 		return (x*y) / exp(pow(0.05 * x, 2) * pow(0.05 * y, 2))/3;
 		break;
 	default:
-		return 50*sin((x * x + y * y)/500);
+		return (x * x + y * y) / 50;
 	}
 }
 
@@ -295,12 +295,12 @@ void ChartClass::initializeValueGrid()
 	}
 	else
 	{
+		x0 = cfg->Get_x0();
+		x1 = cfg->Get_x1();
+		y0 = cfg->Get_y0();
+		y1 = cfg->Get_y1();
 		f_min = f_max = getFunctionValue(cfg->Get_x0(), cfg->Get_y1());
 	}
-	x0 = cfg->Get_x0();
-	x1 = cfg->Get_x1();
-	y0 = cfg->Get_y0();
-	y1 = cfg->Get_y1();
 
 	if (x1 - x0 > y1 - y0)
 	{
@@ -319,8 +319,8 @@ void ChartClass::initializeValueGrid()
 		plot_w = 500;
 		plot_h = 500;
 	}
-	double x_step = (cfg->Get_x1() - cfg->Get_x0()) / (plot_w - 1.0);
-	double y_step = (cfg->Get_y1() - cfg->Get_y0()) / (plot_h - 1.0);
+	double x_step = (x1 - x0) / (plot_w - 1.0);
+	double y_step = (y1 - y0) / (plot_h - 1.0);
 	for (int i = 0; i < plot_h; i++)
 	{
 		for (int j = 0; j < plot_w; j++)
@@ -486,8 +486,8 @@ void ChartClass::drawValueBar(wxDC * dc)
 	dc->DrawLine(_w - 51, 39, _w - 41, 39);
 	dc->DrawLine(_w - 51, _h - 40, _w - 41, _h - 40);
 	
-	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_max()), _w - 110, 30);
-	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_min()), _w - 110, _h - 50);
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_max()), _w - 125, 30);
+	dc->DrawText(wxString::Format(wxT("%10.2lf"), Get_f_min()), _w - 125, _h - 50);
 	
 	wxMemoryDC memDC;
 	memDC.SelectObject(bitmap);
@@ -513,6 +513,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 
 	dc->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
+	// wyświetlanie wzoru funkcji
 	if (cfg->Get_loaded())
 	{
 		dc->DrawText("Funkcja z pliku", 30, _h - 30);
@@ -523,7 +524,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 		switch (cfg->Get_f_type())
 		{
 		case 1:
-			str = "f(x,y) = (x^2 + y^2)/50";
+			str = "f(x,y) = 50sin((x^2 + y^2)/500)";
 			break;
 		case 2:
 			str = "f(x,y) = 10(sgn(-65 - x) + sgn(-35 - x) + sgn(-5 - x) + sgn(25 - x) + sgn(55 - x))";
@@ -535,7 +536,7 @@ void ChartClass::drawValueBar(wxDC * dc)
 			str = "f(x,y) = 1/3 * xy/e^((0.05x)^2 * (0.05y)^2)";
 			break;
 		default:
-			str = "f(x,y) = 50sin((x^2 + y^2)/500)";
+			str = "f(x,y) = (x^2 + y^2)/50";
 		}
 		dc->DrawText(str, 30, _h - 30);
 	}

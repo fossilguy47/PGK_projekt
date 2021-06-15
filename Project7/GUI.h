@@ -54,8 +54,8 @@ class MyFrame : public wxFrame
 		wxSpinCtrlDouble* y1_SpinCtrlDouble;
 		wxStaticText* m_staticText91;
 		wxSpinCtrlDouble* z1_SpinCtrlDouble;
-		wxButton* draw_button;
 		wxCheckBox* contour_checkBox;
+		wxButton* draw_button;
 		wxStaticText* x_step_staticText;
 		wxSpinCtrl* x_step_spinCtrl;
 		wxStaticText* y_step_staticText;
@@ -82,8 +82,8 @@ class MyFrame : public wxFrame
 		virtual void x1_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void y1_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void z1_update( wxCommandEvent& event ) { event.Skip(); }
-		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void contour_checkBoxOnCheckBox( wxCommandEvent& event ) { event.Skip(); }
+		virtual void draw_buttonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void x_step_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void y_step_update( wxCommandEvent& event ) { event.Skip(); }
 		virtual void zoom_sliderOnScroll( wxScrollEvent& event ) { event.Skip(); }
