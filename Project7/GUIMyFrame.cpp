@@ -15,7 +15,7 @@ MyFrame( parent )
 
 void GUIMyFrame::drawing_panelUpdate( wxUpdateUIEvent& event )
 {
-	if (!cfg->Get_contour()) Repaint();
+	Repaint();
 }
 
 void GUIMyFrame::function_choiceOnChoice( wxCommandEvent& event )
